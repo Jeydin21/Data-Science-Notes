@@ -1,3 +1,8 @@
+---
+title: "Day 2 R Notes"
+output: html_document
+---
+
 # Day 2 R Notes
 Below is a **graph** displaying the graphical data from the `backpack.csv` file. The graph displays the **relationship** between `BodyWeight` and `BackpackWeight`. 
 
