@@ -1,0 +1,22 @@
+# Day 2 R Notes
+Below is a **graph** displaying the graphical data from the `backpack.csv` file. The graph displays the **relationship** between `BodyWeight` and `BackpackWeight`. 
+
+The data is color coded where the <span style="color:red">Female</span> points are red colored and the <span style="color:steelblue">Male</span> points are blue colored, as shown in the legend in the top right.
+
+```{r, echo = FALSE}
+backpack <- read.csv("backpack.csv", header = TRUE)
+attach(backpack)
+
+plot(BodyWeight, BackpackWeight, main = "BackpackWeight to BodyWeight", xlab = "BodyWeight", ylab = "BackpackWeight", col = ifelse(backpack$Sex == "Female", "Red", "Blue"), pch = 18)
+
+legend("topright", legend = c("Female", "Male"), col = c("red", "blue"), pch = 20)
+```
+
+## It's Time to CUSS and BS
+The data is primarily **centered** around the point (150, 10). 
+
+There may be some **possible outliers** at the **top** of the chart and to the **top** of the chart. 
+
+The data is **not perfectly linear**, but it does have a **positive** correlation. 
+
+The distribution is **spread out** and not very tight.

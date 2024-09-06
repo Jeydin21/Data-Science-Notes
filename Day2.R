@@ -46,4 +46,6 @@ hist(BackpackWeight, col = "blue", breaks = 12)
 # main is the tile of the graph.
 # xlab is the label in the horizontal axis.
 # ylab is the label in the vertical axis.
-plot(BodyWeight, BackpackWeight, main = "BackpackWeight to BodyWeight", xlab = "BodyWeight", ylab = "BackpackWeight")
+plot(BodyWeight, BackpackWeight, main = "BackpackWeight to BodyWeight", xlab = "BodyWeight", ylab = "BackpackWeight", col = ifelse(backpack$Sex == "Female", "Red", "Blue"), pch = 18)
+
+legend("topright", legend = c("Female", "Male"), col = c("red", "blue"), pch = 18)
