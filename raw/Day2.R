@@ -1,6 +1,6 @@
 # Ctrl + L clears console
 # Load backpack dataset into R
-backpack <- read.csv("backpack.csv", header = TRUE)
+backpack <- read.csv("data/backpack.csv", header = TRUE)
 
 # Attach the file so that we can address column names directly
 # Without attaching, we would have to type

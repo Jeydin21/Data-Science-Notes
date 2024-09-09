@@ -1,5 +1,5 @@
 # load weightloss4 file
-weightloss <- read.csv(file.choose(), header = TRUE)
+weightloss <- read.csv("data/weightloss.csv", header = TRUE)
 attach(weightloss)
 
 # produce cooperative boxplots

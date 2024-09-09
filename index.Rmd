@@ -1,0 +1,10 @@
+# Data Science Notes
+Notes I take in my Data Science class in R and R Markdown
+
+## Table of Contents
+
+### Semester 1
+- #### R Introduction
+  - [R Introduction Day 1](raw/Day1.R)
+  - [R Introduction Day 2](raw/Day2.R)
+  - [Four Step Process](notes/fourStepProcess.html)

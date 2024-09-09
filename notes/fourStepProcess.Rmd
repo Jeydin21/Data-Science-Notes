@@ -1,7 +1,7 @@
 # Four Step Process Notes
 ```{r setup, echo = FALSE}
 # load weightloss4 file
-weightloss <- read.csv("weightloss.csv", header = TRUE)
+weightloss <- read.csv("data/weightloss.csv", header = TRUE)
 attach(weightloss)
 ```
 

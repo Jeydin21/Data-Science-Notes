@@ -1,5 +1,5 @@
 # Backpack 1
-backpack <- read.csv("backpack.csv", header = TRUE)
+backpack <- read.csv("data/backpack.csv", header = TRUE)
 
 # At this point, you should see a flashing icon on your taskbar.
 # Select the icon and go to the file that you wish to upload
