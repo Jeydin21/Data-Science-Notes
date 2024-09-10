@@ -5,6 +5,11 @@ Notes I take in my Data Science class in R and R Markdown
 
 ### Semester 1
 - #### R Introduction
-  - [R Introduction Day 1](raw/Day1.R)
-  - [R Introduction Day 2](raw/Day2.R)
-  - [Four Step Process](notes/fourStepProcess)
+  - #### Notes
+  | Topic               | Link                        |
+  |---------------------|-----------------------------|
+  | The Four Step Process  | [notes/FourStepProcess](notes/FourStepProcess)   |
+  - #### Assignments
+  | Topic               | Link                        |
+  |---------------------|-----------------------------|
+  | WeightLoss7 Assignment  | [assignments/WeightLoss7](assignments/WeightLoss7)   |

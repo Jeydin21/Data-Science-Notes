@@ -1,18 +1,18 @@
-# Four Step Process Notes
+# Weight Loss 7 Assignment
 ```{r setup, echo = FALSE}
-# load weightloss4 file
-weightloss <- read.csv("../data/weightloss4.csv", header = TRUE)
+# load weightloss& file
+weightloss <- read.csv("../data/weightloss7.csv", header = TRUE)
 attach(weightloss)
 ```
 
 ### Produce cooperative boxplots
 ```{r}
-boxplot(WeightLoss ~ Group)
+boxplot(Month7Loss ~ Group)
 ```
 
 ### Produce cooperative dotplots
 ```{r}
-stripchart(WeightLoss ~ Group, method = "stack", pch = 20, cex = 1.5)
+stripchart(Month7Loss ~ Group, method = "stack", pch = 20, cex = 1.5)
 ```
 
 Find the n, mean, and sd for each condition
@@ -22,21 +22,21 @@ Find the n, mean, and sd for each condition
   - A single equals sign (=) is an arithmetic operator
   - A double equals sign (==) is a logical operator (tests True/False)
 ```{r}
-mu_control <- mean(WeightLoss[Group == "Control"])
+mu_control <- mean(Month7Loss[Group == "Control"])
 ```
 
 #### OR use tapply() function to see both conditions at once
 ```{r}
-tapply(WeightLoss, Group, length)
-tapply(WeightLoss, Group, mean)
-tapply(WeightLoss, Group, sd)
+tapply(Month7Loss, Group, length)
+tapply(Month7Loss, Group, mean)
+tapply(Month7Loss, Group, sd)
 ```
 
 ### Create a table for the n, mean, and sd according to condition
 ```{r}
-n <- tapply(WeightLoss, Group, length)
-mean <- tapply(WeightLoss, Group, mean)
-SD <- tapply(WeightLoss, Group, sd)
+n <- tapply(Month7Loss, Group, length)
+mean <- tapply(Month7Loss, Group, mean)
+SD <- tapply(Month7Loss, Group, sd)
 cbind(n, mean, SD)
 ```
 
@@ -47,7 +47,7 @@ round(cbind(n, mean, SD), 2)
 
 ### T-test
 ```{r}
-t.test(WeightLoss ~ Group)
+t.test(Month7Loss ~ Group)
 ```
 
 ### Look at Residuals (many steps to follow)
@@ -56,8 +56,8 @@ Treat Group condition as numeric (Control = 0 and Incentive = 1)
 Place the numeric condition in a new column called GroupNumeric
 ```{r}
 GroupNumeric <- as.numeric(Group == "Incentive")
-mu_control <- mean(WeightLoss[GroupNumeric == 0])
-mu_incentive <- mean(WeightLoss[GroupNumeric == 1])
+mu_control <- mean(Month7Loss[GroupNumeric == 0])
+mu_incentive <- mean(Month7Loss[GroupNumeric == 1])
 ```
 Now we're taking steps to make a column that will contain the correct mean for the condition of Group variable
 
@@ -72,19 +72,19 @@ print(Fit)
 
 ### Find Residuals (Difference from observed values and mean)
 ```{r}
-Resid <- WeightLoss - Fit
+Resid <- Month7Loss - Fit
 # Put them all together
-cbind(WeightLoss, Fit, Resid)
+cbind(Month7Loss, Fit, Resid)
 ```
 
 We already have t-statistic, but we can also calculate it manually
 
 Compare each result with the computer output from the t-test
 ```{r}
-sdc <- sd(WeightLoss[Group == "Control"])
-sdi <- sd(WeightLoss[Group == "Incentive"])
-nc <- length(WeightLoss[Group == "Control"])
-ni <- length(WeightLoss[Group == "Incentive"])
+sdc <- sd(Month7Loss[Group == "Control"])
+sdi <- sd(Month7Loss[Group == "Incentive"])
+nc <- length(Month7Loss[Group == "Control"])
+ni <- length(Month7Loss[Group == "Incentive"])
 t.stat <- (mu_control - mu_incentive) / sqrt(sdc^2 / nc + sdi^2 / ni)
 ```
 
