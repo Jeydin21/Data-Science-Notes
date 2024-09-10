@@ -12,4 +12,4 @@ Notes I take in my Data Science class in R and R Markdown
   - #### Assignments
   | Topic               | Link                        |
   |---------------------|-----------------------------|
-  | WeightLoss7 Assignment  | [assignments/WeightLoss7](assignments/WeightLoss7)   |
+  | WeightLoss7  | [assignments/WeightLoss7](assignments/WeightLoss7)   |
