@@ -13,3 +13,4 @@ Notes I take in my Data Science class in R and R Markdown
   | Topic               | Link                        |
   |---------------------|-----------------------------|
   | WeightLoss7  | [assignments/WeightLoss7](assignments/WeightLoss7)   |
+  | Four Step Process Quiz  | [assignments/Amyloid](assignments/Amyloid)   |
