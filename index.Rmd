@@ -1,4 +1,11 @@
-# Data Science Notes
+---
+title: "Data Science Notes"
+output:
+  html_document:
+    css: "style.css"
+lang: en-US
+---
+
 Notes I take in my Data Science class in R and R Markdown
 
 ## Table of Contents

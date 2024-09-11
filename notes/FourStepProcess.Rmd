@@ -1,4 +1,11 @@
-# Four Step Process Notes
+---
+title: "Four Step Process Notes"
+output:
+  html_document:
+    css: "../docs/style.css"
+lang: en-US
+---
+
 ```{r setup, echo = FALSE}
 # load weightloss4 file
 weightloss <- read.csv("../data/weightloss4.csv", header = TRUE)

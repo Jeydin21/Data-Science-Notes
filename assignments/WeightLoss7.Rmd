@@ -1,4 +1,11 @@
-# Weight Loss 7 Assignment
+---
+title: "Weightloss 7 Assignment"
+output:
+  html_document:
+    css: "../docs/style.css"
+lang: en-US
+---
+
 ```{r setup, echo = FALSE}
 # load weightloss& file
 weightloss <- read.csv("../data/weightloss7.csv", header = TRUE)

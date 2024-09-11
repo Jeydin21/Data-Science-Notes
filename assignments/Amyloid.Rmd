@@ -1,4 +1,10 @@
-# Four Step Process R Quiz (Amyloid Dataset)
+---
+title: "Four Step Process R Quiz (Amyloid Dataset)"
+output:
+  html_document:
+    css: "../docs/style.css"
+lang: en-US
+---
 
 ### Load "Amyloid Altered" file
 ```{r}
