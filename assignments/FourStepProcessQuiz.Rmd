@@ -1,9 +1,11 @@
 ---
-title: "Four Step Process R Quiz (Amyloid Dataset)"
+title: "Four Step Process Quiz (Amyloid Dataset)"
 output:
   html_document:
-    css: "../docs/style.css"
+    toc: true
+    theme: darkly
 lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
 ---
 
 ### Load "Amyloid Altered" file

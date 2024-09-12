@@ -2,8 +2,10 @@
 title: "Four Step Process Notes"
 output:
   html_document:
-    css: "../docs/style.css"
+    toc: true
+    theme: darkly
 lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
 ---
 
 ```{r setup, echo = FALSE}
