@@ -2,9 +2,12 @@
 title: "Simple Linear Regression Notes"
 output:
   html_document:
-    css: "../docs/style.css"
+    toc: true
+    theme: darkly
 lang: en-US
+date: "Last Updated: `r Sys.Date()`"
 ---
+
 ```{r setup, echo = FALSE}
 porsche <- read.csv("../data/PorschePrice.csv", header = TRUE)
 ```
@@ -91,7 +94,7 @@ abline(h = mean(Price), lty = 3, col = "red")
 - lty4 = dot-dash
 - lty5 = long dash
 
-## Look at the fitted values and residuals
+### Look at the fitted values and residuals
 ```{r}
 porsche_lm$residuals
 cbind(Mileage, Price, porsche_lm$fitted.values, porsche_lm$residuals)
