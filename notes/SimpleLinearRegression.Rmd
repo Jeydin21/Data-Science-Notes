@@ -1,0 +1,134 @@
+---
+title: "Simple Linear Regression Notes"
+output:
+  html_document:
+    css: "../docs/style.css"
+lang: en-US
+---
+```{r setup, echo = FALSE}
+porsche <- read.csv("../data/PorschePrice.csv", header = TRUE)
+```
+
+### View the dataset
+```{r}
+porsche
+```
+
+### View the dimensions (rows x columns)
+```{r}
+dim(porsche)
+```
+
+### Check the column names
+```{r}
+colnames(porsche)
+```
+
+### Look at the first few records
+```{r}
+head(porsche, n = 3)
+```
+### Attach the file so that we can more easily refer to variable names
+```{r}
+attach(porsche)
+```
+
+### Look at a plot of mileage and price
+```{r}
+plot(Mileage, Price, main = "Price vs Mileage", xlab = "Mileage", ylab = "Price")
+```
+
+The data appear to be distributed in a roughly linear configuration with a negative trend
+
+Use R's lm function to see the linear model (the defined equation for y-hat)
+
+Store the linear model as porsche_lm
+```{r}
+porsche_lm <- lm(Price ~ Mileage)
+```
+
+The lm function returns a list with a lot of useful information
+```{r}
+length(porsche_lm)
+names(porsche_lm)
+```
+
+### View the linear model
+```{r}
+porsche_lm
+```
+
+### Other ways to see information
+```{r}
+porsche_lm$coefficients
+porsche_lm$coef
+```
+
+This tells us that the line of best fit for our sample data is pricehat=71.0905 - .5894(Mileage)
+
+### View the regression line
+```{r}
+plot(Mileage, Price, main = "Price vs Mileage", xlab = "Mileage", ylab = "Price")
+abline(porsche_lm, )
+```
+
+#### You can also write abline by giving any intercept and slope such as
+```{r}
+plot(Mileage, Price, main = "Price vs Mileage", xlab = "Mileage", ylab = "Price")
+abline(71.0905, -.5894)
+```
+
+### Add a horizontal, dotted line at the mean price level
+```{r}
+plot(Mileage, Price, main = "Price vs. Mileage", xlab = "Mileage", ylab = "Price")
+abline(h = mean(Price), lty = 3, col = "red")
+```
+
+#### lty gives characteristics of the line (line type)
+- lty1 = solid
+- lty2 = dashed
+- lty3 = dotted
+- lty4 = dot-dash
+- lty5 = long dash
+
+## Look at the fitted values and residuals
+```{r}
+porsche_lm$residuals
+cbind(Mileage, Price, porsche_lm$fitted.values, porsche_lm$residuals)
+```
+
+### Do the same thing, but only look at the first 5 rows
+```{r}
+cbind(Mileage, Price, porsche_lm$fitted.values, porsche_lm$residuals)[1:5, ]
+```
+
+### Or use the head function to look at the top of the dataset
+```{r}
+head(cbind(Mileage, Price, porsche_lm$fitted.values, porsche_lm$residuals))
+```
+
+### Save the table
+```{r}
+porscheTable <- data.frame(Mileage, Price, fits = porsche_lm$fitted.values, resids = porsche_lm$residuals)
+```
+
+### View column names
+```{r}
+colnames(porscheTable)
+```
+
+### Change the names of columns 3 and 4
+```{r}
+names(porscheTable)[c(3, 4)] = c("fits", "resids")
+```
+
+### Check your work
+```{r}
+str(porscheTable)
+porscheTable
+```
+
+### Summary
+```{r}
+summary(porsche_lm)
+```
