@@ -2,7 +2,7 @@
 title: "Data Science Notes"
 output:
   html_document:
-    css: "style.css"
+    css: "../docs/style.css"
 lang: en-US
 ---
 
