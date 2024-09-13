@@ -4,6 +4,7 @@ output:
   html_document:
     toc: true
     theme: darkly
+    anchor_sections: true
 lang: en-US
 date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
 ---
