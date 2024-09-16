@@ -1,0 +1,116 @@
+---
+title: "Test 0916 (Gunnel and Placement Datasets)"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+## Part 1 
+
+### Load and attach the Gunnels dataset
+```{r}
+gunnels <- read.csv("../data/gunnels.csv")
+attach(gunnels)
+```
+
+### Find the 5-number summary for the variable Fromlow
+```{r}
+summary(Fromlow)
+```
+
+### Create a histogram for the variable Fromlow with breaks in multiples of 50
+```{r}
+hist(Fromlow, breaks = seq(0, 1000, by = 50), main = "Histogram of Fromlow", xlab = "Fromlow", ylab = "Frequency", col = "lightblue")
+```
+
+### Produce cooperative boxplots to compare the Fromlow variable across levels of the Gunnel variable
+```{r}
+boxplot(Fromlow ~ Gunnel, data = gunnels, main = "Boxplot of Fromlow by Gunnel", xlab = "Gunnel", ylab = "Fromlow", col = "lightblue")
+```
+
+### Create a table for the n, mean, and sd according to condition and round to two decimal places
+```{r}
+tapply(Fromlow, Gunnel, function(x) c(n = length(x), mean = round(mean(x), 2), sd = round(sd(x), 2)))
+```
+
+### Perform a t-test to evaluate the difference of Fromlow between the Gunnel groups
+```{r}
+t.test(Fromlow ~ Gunnel, data = gunnels)
+```
+
+### Add a column to your dataset for fitted values of Fromlow according to the Gunnel condition
+```{r}
+gunnels$fitted <- fitted(lm(Fromlow ~ Gunnel, data = gunnels))
+```
+
+### Create a qq plot and line for the Residuals for Gunnel Condition 0
+```{r}
+qqnorm(residuals(lm(Fromlow ~ Gunnel, data = gunnels)[gunnels$Gunnel == 0]), main = "QQ Plot of Residuals for Gunnel Condition 0", xlab = "Theoretical Quantiles", ylab = "Sample Quantiles")
+qqline(residuals(lm(Fromlow ~ Gunnel, data = gunnels)[gunnels$Gunnel == 0]), col = "red", lwd = 2)
+```
+
+### Create a histogram for the Residuals for Gunnel Condition 0
+```{r}
+gunnels$residuals <- residuals(lm(Fromlow ~ Gunnel, data = gunnels))
+hist(gunnels$residuals[gunnels$Gunnel == 0], main = "Histogram of Residuals for Gunnel Condition 0", xlab = "Residuals", ylab = "Frequency", col = "lightblue")
+```
+
+### Create a qq plot and line for the Residuals for Gunnel Condition 1
+```{r}
+qqnorm(gunnels$residuals[gunnels$Gunnel == 1], main = "QQ Plot of Residuals for Gunnel Condition 1", xlab = "Theoretical Quantiles", ylab = "Sample Quantiles")
+qqline(gunnels$residuals[gunnels$Gunnel == 1], col = "red", lwd = 2)
+```
+
+### Create a histogram for the Residuals for Gunnel Condition 1
+```{r}
+hist(gunnels$residuals[gunnels$Gunnel == 1], main = "Histogram of Residuals for Gunnel Condition 1", xlab = "Residuals", ylab = "Frequency", col = "lightblue")
+```
+
+## Part 2
+
+### Load and attach the Placement dataset
+```{r}
+placement <- read.csv("../data/placement.csv")
+attach(placement)
+```
+
+### View the Scatterplot for cgpa according to placement_exam_marks
+```{r}
+plot(placement_exam_marks, cgpa, main = "Scatterplot of CGPA by Placement Exam Marks", xlab = "Placement Exam Marks", ylab = "CGPA")
+```
+
+### View the linear model
+```{r}
+lm(cgpa ~ placement_exam_marks, data = placement)
+```
+
+### View the summary for the linear model
+```{r}
+summary(lm(cgpa ~ placement_exam_marks, data = placement))
+```
+
+### Add the regression line to your scatterplot
+```{r}
+plot(placement_exam_marks, cgpa, main = "Scatterplot of CGPA by Placement Exam Marks", xlab = "Placement Exam Marks", ylab = "CGPA")
+abline(lm(cgpa ~ placement_exam_marks, data = placement), col = "red", lwd = 2)
+```
+
+### Add a horizontal, dotted line at the mean cgpa
+```{r}
+plot(placement_exam_marks, cgpa, main = "Scatterplot of CGPA by Placement Exam Marks", xlab = "Placement Exam Marks", ylab = "CGPA")
+abline(h = mean(cgpa), lty = 2, col = "red")
+```
+
+### Look at a plot of the residuals over fitted values
+```{r}
+plot(fitted(lm(cgpa ~ placement_exam_marks, data = placement)), residuals(lm(cgpa ~ placement_exam_marks, data = placement)), main = "Residuals vs Fitted Values", xlab = "Fitted Values", ylab = "Residuals")
+```
+
+### Look at the histogram of residuals
+```{r}
+hist(residuals(lm(cgpa ~ placement_exam_marks, data = placement)), main = "Histogram of Residuals", xlab = "Residuals", ylab = "Frequency", col = "lightblue")
+```
