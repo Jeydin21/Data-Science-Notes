@@ -10,10 +10,10 @@ Notes I take in my Data Science class in R and R Markdown
 
 ### Table of Contents
 - #### R Introduction
-  - [The Four Step Process Notes](notes/FourStepProcessNotes)
+  - [[0.4] The Four Step Process Notes](notes/FourStepProcessNotes)
   - [Four Step Process Quiz](assignments/FourStepProcessQuiz)
-- #### Linear Regression
-  - [Simple Linear Regression Notes](notes/SimpleLinearRegressionNotes)
+- #### Simple Linear Regression
+  - [[1.1 - 1.2] Simple Linear Regression Notes](notes/SimpleLinearRegressionNotes)
   - [Test 0916](assignments/Test0916)
-- #### Transformations
-  - [Transformations Notes](notes/TransformationsNotes)
+  - [[1.4] Transformations Notes](notes/TransformationsNotes)
+  - [[1.5] Outliers and Influential Points Notes](notes/OutliersNotes)

@@ -1,0 +1,144 @@
+---
+title: "Outliers and Influential Points Notes"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+Analyze potential outliers in a dataset using residuals
+
+## Introduction to standardized and studentized residuals
+#### Load LongJumpOlympics dataset
+```{r}
+jump <- read.csv("../data/LongJumpOlympics.csv", header = TRUE)
+attach(jump)
+```
+
+### Look at the plot of gold medal winning jumps, by year
+```{r}
+plot(Gold ~ Year, xlab = "Year", ylab = "Gold Medal Jump (meters)")
+jump.lm <- lm(Gold ~ Year)
+abline(jump.lm, col = "red")
+```
+
+Notice the 1968 performance of 8.9 meters. Is it an outlier?
+
+### Look at the residuals
+```{r}
+jump.lm$residuals
+plot(jump.lm$residuals ~ jump.lm$fitted.values, xlab = "Fitted Values", ylab = "Residuals", main = "Residuals vs. Fitted Values")
+abline(h = 0, lty = 2, col = "red")
+```
+
+### What is the residual of the 1968 jump?
+```{r}
+jump.lm$residuals[16]
+```
+
+### Load the MASS library (necessary for standardized and studentized residuals)
+```{r}
+library(MASS)
+```
+
+### Look at the standardized residuals
+```{r}
+stdres(jump.lm)
+plot(stdres(jump.lm) ~ jump.lm$fit, ylim = c(-4, 4), xlab = "Fitted Values", ylab = "Standardized Residuals", main = "Standardized Residuals vs. Fitted Values")
+abline(h = -2, lty = 3, col = "red")
+abline(h = 2, lty = 3, col = "red")
+```
+
+### The standardized residual of the 1968 jump was:
+```{r}
+stdres(jump.lm)[16]
+```
+
+...But the existence of the potential outlier affects the regression line...
+
+Go back to the original plot of (Gold ~ Year)
+
+### Add a red line to show what the regression line would look like without the 1968 data
+```{r}
+no68.df <- jump[!Year == "1968", ]
+no68.lm <- lm(no68.df$Gold ~ no68.df$Year)
+plot(Gold ~ Year, xlab = "Year", ylab = "Gold Medal Jump (meters)", main = "Gold Medal Winning Long Jumps")
+abline(jump.lm)
+abline(no68.lm, col = "red", lty = 3)
+```
+
+### What would be the standardized residual of the point if the regression line were computed without it (studentized residual)?
+```{r}
+stud_resids <- studres(jump.lm)
+stud_resids
+```
+
+### Studentized Residual Plot
+```{r}
+plot(stud_resids ~ Year, ylim = c(-4, 4), xlab = "Year", ylab = "Studentized Residuals", main = "Studentized Residuals vs. Year")
+abline(h = -2, lty = 3, col = "red")
+abline(h = 2, lty = 3, col = "red")
+```
+
+### The studentized residual of the 1968 jump was
+```{r}
+stud_resids[16]
+```
+
+### New problem
+```{r}
+detach(jump)
+```
+## Analyze the PalmBeach dataset for outliers
+
+### Load the PalmBeach dataset
+```{r}
+palm <- read.csv("../data/PalmBeach.csv", header = TRUE)
+attach(palm)
+```
+
+### Scatter plot of the data
+```{r}
+plot(Buchanan, Bush, main = "Scatter Plot of Votes for Buchanan and Bush", xlab = "Votes for Buchanan", ylab = "Votes for Bush", pch = 19)
+```
+
+### Summary statistics for Buchanan
+```{r}
+summary(Buchanan)
+```
+
+### Summary statistics for Bush
+```{r}
+summary(Bush)
+```
+
+### Function to identify outliers using the IQR method
+```{r}
+identify_outliers <- function(x) {
+  Q1 <- quantile(x, 0.25)
+  Q3 <- quantile(x, 0.75)
+  IQR <- Q3 - Q1
+  lower_bound <- Q1 - 1.5 * IQR
+  upper_bound <- Q3 + 1.5 * IQR
+  outliers <- x[x < lower_bound | x > upper_bound]
+  return(outliers)
+}
+```
+
+### Outliers for Buchanan
+```{r}
+buchanan_outliers <- identify_outliers(Buchanan)
+buchanan_outliers
+```
+
+### Outliers for Bush
+```{r}
+bush_outliers <- identify_outliers(Bush)
+bush_outliers
+```
+
+### Interpretation
+In the Palm Beach dataset, we found possible outliers by using the 1.5 IQR rule. There are possible outliers for Buchanan at `789, 650, 836, 3407, 1010`. For Bush, the possible outliers are at `177279, 152082, 176967, 152846, 184312`.
