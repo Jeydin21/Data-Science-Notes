@@ -1,0 +1,87 @@
+---
+title: "R Markdown Quiz"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+```{r, echo = FALSE}
+baseball <- read.csv("../data/BaseballTimes.csv")
+attach(baseball)
+```
+
+## Analyze the distribution of the response varuable (time in minutes) alone
+
+###  Use and describe graphical displays (dotplot, histogram, boxplot)
+```{r}
+hist(Time, main = "Histogram of Time", xlab = "Time (minutes)", col = "lightblue")
+boxplot(Time, main = "Boxplot of Time", ylab = "Time (minutes)", col = "lightgreen")
+plot(Time, main = "Dotplot of Time", ylab = "Time (minutes)")
+```
+
+###  Report descriptive statistics 
+```{r}
+summary(Time)
+```
+
+###  Identify the outliers using the 1.5 x IQR method 
+```{r}
+IQR <- IQR(Time)
+outliers <- Time[Time < (quantile(Time)[2] - 1.5 * IQR) | Time > (quantile(Time)[4] + 1.5 * IQR)]
+outliers
+```
+
+## Examine scatterplots to investigate which of the quantitative predictor variables appears to be the best single predictor of time.
+```{r}
+plot(Runs, Time, main = "Dotplot of Time vs Runs", xlab = "Runs", ylab = "Time (minutes)")
+plot(Margin, Time, main = "Dotplot of Time vs Margin", xlab = "Margin", ylab = "Time (minutes)")
+plot(Pitchers, Time, main = "Dotplot of Time vs Pitchers", xlab = "Pitchers", ylab = "Time (minutes)")
+plot(Attendance, Time, main = "Dotplot of Time vs Attendance", xlab = "Attendance", ylab = "Time (minutes)")
+```
+
+###  Comment on what the scatterplots reveal
+- The scatterplot of `Time vs Runs` shows a positive linear relationship, suggesting that Runs may be a good predictor of Time, however, there appears to be a possible outlier at 15 Runs. 
+
+- The scatterplot of `Time vs Margin` looks almost linear but with lots of variability, which doesn't look like a good predictor of Time.
+
+- The scatterplot of `Time vs Pitchers` shows an almost perfect linear relationship with not much variability, making it the best predictor of Time among the variables examined.
+
+- The scatterplot of `Time vs Attendance` shows no clear relationship between the two variables, suggesting that Attendance may not be a good predictor of Time.
+
+###  Determine the regression equation for predicting time based on your chosen predictor
+```{r}
+time.lm <- lm(Time ~ Pitchers, data = baseball)
+coef(time.lm)
+```
+
+###  Analyze conditions for inference including appropriate residual plots and comments on what they reveal
+```{r}
+par(mfrow = c(2, 2))
+plot(time.lm, which = 1:4, main = "Residual Plots")
+```
+
+## Which game has the largest residual (in absolute value) for the model that you selected? 
+```{r}
+residuals <- residuals(time.lm)
+max_residual <- which.max(abs(residuals))
+baseball[max_residual, ]
+```
+
+###  Is this the same game that you identified as an outlier based on your analysis of the time variable alone?
+Yes it is, the outlier we found from the time variable analysis was the same game with an outlier of 317.
+
+## Repeat the entire analysis from the previous exercise, with the outlier omitted
+```{r}
+baseball_no_outlier <- baseball[-max_residual, ]
+time.lm_no_outlier <- lm(Time ~ Pitchers, data = baseball_no_outlier)
+coef(time.lm_no_outlier)
+par(mfrow = c(2, 2))
+plot(time.lm_no_outlier, which = 1:4, main = "Residual Plots (No Outlier)")
+```
+
+## Comment on the extent to which omitting the outlier changed the analysis and your conclusions. 
+Ommitting the outlier changed the regression equation slightly, but the overall analysis and conclusions remained the same. The outlier had a significant impact on the model, but the relationship between `Time and Pitchers` remained strong even without the outlier.
