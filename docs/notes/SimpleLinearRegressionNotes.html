@@ -225,6 +225,96 @@ window.buildTabsets = function(tocID) {
 };
 
 </script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('show');
+    });
+  });
+  $("#rmd-hide-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('hide');
+    });
+  });
+
+  // index for unique code element ids
+  var currentIndex = 1;
+
+  // select all R code blocks
+  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia, pre.foldable');
+  rCodeBlocks.each(function() {
+    // skip if the block has fold-none class
+    if ($(this).hasClass('fold-none')) return;
+
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    var showThis = (show || $(this).hasClass('fold-show')) && !$(this).hasClass('fold-hide');
+    var id = 'rcode-643E0F36' + currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (showThis ? 'Hide' : 'Show') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm code-folding-btn pull-right float-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-bs-toggle', 'collapse') // BS5
+        .attr('data-target', '#' + id)
+        .attr('data-bs-target', '#' + id)   // BS5
+        .attr('aria-expanded', showThis)
+        .attr('aria-controls', id);
+
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+
+    div.before(buttonRow);
+
+    // show the div if necessary
+    if (showThis) div.collapse('show');
+
+    // update state of button on show/hide
+    //   * Change text
+    //   * add a class for intermediate states styling
+    div.on('hide.bs.collapse', function () {
+      showCodeText.text('Show');
+      showCodeButton.addClass('btn-collapsing');
+    });
+    div.on('hidden.bs.collapse', function () {
+      showCodeButton.removeClass('btn-collapsing');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide');
+      showCodeButton.addClass('btn-expanding');
+    });
+    div.on('shown.bs.collapse', function () {
+      showCodeButton.removeClass('btn-expanding');
+    });
+
+  });
+
+}
+</script>
+<script>
+window.initializeSourceEmbed = function(filename) {
+  $("#rmd-download-source").click(function() {
+    var src = $("#rmd-source-code").html();
+    var a = document.createElement('a');
+    a.href = "data:text/x-r-markdown;base64," + src;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+};
+</script>
 
 <style type="text/css">
 code{white-space: pre-wrap;}
@@ -340,6 +430,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 </script>
 
 
+<style type="text/css">
+#rmd-source-code {
+display: none;
+}
+</style>
 
 
 
@@ -420,6 +515,9 @@ display: none;
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -436,10 +534,17 @@ display: none;
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Simple Linear Regression Notes</h1>
-<h4 class="date">Last Updated: September 13, 2024 08:46:45</h4>
+<h4 class="date">Last Updated: September 23, 2024 08:59:17</h4>
 
 </div>
 
@@ -810,6 +915,7 @@ qqnorm and qqline you just did</p>
 </div>
 </div>
 
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlNpbXBsZSBMaW5lYXIgUmVncmVzc2lvbiBOb3RlcyINCm91dHB1dDoNCiAgaHRtbF9kb2N1bWVudDoNCiAgICB0b2M6IHRydWUNCiAgICB0aGVtZTogZGFya2x5DQogICAgaGlnaGxpZ2h0OiBweWdtZW50cw0KICAgIGNvZGVfZG93bmxvYWQ6IHRydWUNCmxhbmc6IGVuLVVTDQpkYXRlOiAiTGFzdCBVcGRhdGVkOiBgciBmb3JtYXQoU3lzLkRhdGUoKSwgJyVCICVkLCAlWScpYCBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVIOiVNOiVTJylgIg0KLS0tDQoNCmBgYHtyIHNldHVwLCBlY2hvID0gRkFMU0V9DQpwb3JzY2hlIDwtIHJlYWQuY3N2KCIuLi9kYXRhL1BvcnNjaGVQcmljZS5jc3YiLCBoZWFkZXIgPSBUUlVFKQ0KYGBgDQoNCiMjIERheSAxOiBJbnRybyB0byBTaW1wbGUgTGluZWFyIFJlZ3Jlc3Npb24NCg0KIyMjIFZpZXcgdGhlIGRhdGFzZXQNCmBgYHtyfQ0KcG9yc2NoZQ0KYGBgDQoNCiMjIyBWaWV3IHRoZSBkaW1lbnNpb25zIChyb3dzIHggY29sdW1ucykNCmBgYHtyfQ0KZGltKHBvcnNjaGUpDQpgYGANCg0KIyMjIENoZWNrIHRoZSBjb2x1bW4gbmFtZXMNCmBgYHtyfQ0KY29sbmFtZXMocG9yc2NoZSkNCmBgYA0KDQojIyMgTG9vayBhdCB0aGUgZmlyc3QgZmV3IHJlY29yZHMNCmBgYHtyfQ0KaGVhZChwb3JzY2hlLCBuID0gMykNCmBgYA0KIyMjIEF0dGFjaCB0aGUgZmlsZSBzbyB0aGF0IHdlIGNhbiBtb3JlIGVhc2lseSByZWZlciB0byB2YXJpYWJsZSBuYW1lcw0KYGBge3J9DQphdHRhY2gocG9yc2NoZSkNCmBgYA0KDQojIyMgTG9vayBhdCBhIHBsb3Qgb2YgbWlsZWFnZSBhbmQgcHJpY2UNCmBgYHtyfQ0KcGxvdChNaWxlYWdlLCBQcmljZSwgbWFpbiA9ICJQcmljZSB2cyBNaWxlYWdlIiwgeGxhYiA9ICJNaWxlYWdlIiwgeWxhYiA9ICJQcmljZSIpDQpgYGANCg0KVGhlIGRhdGEgYXBwZWFyIHRvIGJlIGRpc3RyaWJ1dGVkIGluIGEgcm91Z2hseSBsaW5lYXIgY29uZmlndXJhdGlvbiB3aXRoIGEgbmVnYXRpdmUgdHJlbmQNCg0KVXNlIFIncyBsbSBmdW5jdGlvbiB0byBzZWUgdGhlIGxpbmVhciBtb2RlbCAodGhlIGRlZmluZWQgZXF1YXRpb24gZm9yIHktaGF0KQ0KDQpTdG9yZSB0aGUgbGluZWFyIG1vZGVsIGFzIHBvcnNjaGVfbG0NCmBgYHtyfQ0KcG9yc2NoZV9sbSA8LSBsbShQcmljZSB+IE1pbGVhZ2UpDQpgYGANCg0KVGhlIGxtIGZ1bmN0aW9uIHJldHVybnMgYSBsaXN0IHdpdGggYSBsb3Qgb2YgdXNlZnVsIGluZm9ybWF0aW9uDQpgYGB7cn0NCmxlbmd0aChwb3JzY2hlX2xtKQ0KbmFtZXMocG9yc2NoZV9sbSkNCmBgYA0KDQojIyMgVmlldyB0aGUgbGluZWFyIG1vZGVsDQpgYGB7cn0NCnBvcnNjaGVfbG0NCmBgYA0KDQojIyMgT3RoZXIgd2F5cyB0byBzZWUgaW5mb3JtYXRpb24NCmBgYHtyfQ0KcG9yc2NoZV9sbSRjb2VmZmljaWVudHMNCnBvcnNjaGVfbG0kY29lZg0KYGBgDQoNClRoaXMgdGVsbHMgdXMgdGhhdCB0aGUgbGluZSBvZiBiZXN0IGZpdCBmb3Igb3VyIHNhbXBsZSBkYXRhIGlzIHByaWNlaGF0PTcxLjA5MDUgLSAuNTg5NChNaWxlYWdlKQ0KDQojIyMgVmlldyB0aGUgcmVncmVzc2lvbiBsaW5lDQpgYGB7cn0NCnBsb3QoTWlsZWFnZSwgUHJpY2UsIG1haW4gPSAiUHJpY2UgdnMgTWlsZWFnZSIsIHhsYWIgPSAiTWlsZWFnZSIsIHlsYWIgPSAiUHJpY2UiKQ0KYWJsaW5lKHBvcnNjaGVfbG0sICkNCmBgYA0KDQojIyMjIFlvdSBjYW4gYWxzbyB3cml0ZSBhYmxpbmUgYnkgZ2l2aW5nIGFueSBpbnRlcmNlcHQgYW5kIHNsb3BlIHN1Y2ggYXMNCmBgYHtyfQ0KcGxvdChNaWxlYWdlLCBQcmljZSwgbWFpbiA9ICJQcmljZSB2cyBNaWxlYWdlIiwgeGxhYiA9ICJNaWxlYWdlIiwgeWxhYiA9ICJQcmljZSIpDQphYmxpbmUoNzEuMDkwNSwgLS41ODk0KQ0KYGBgDQoNCiMjIyBBZGQgYSBob3Jpem9udGFsLCBkb3R0ZWQgbGluZSBhdCB0aGUgbWVhbiBwcmljZSBsZXZlbA0KYGBge3J9DQpwbG90KE1pbGVhZ2UsIFByaWNlLCBtYWluID0gIlByaWNlIHZzLiBNaWxlYWdlIiwgeGxhYiA9ICJNaWxlYWdlIiwgeWxhYiA9ICJQcmljZSIpDQphYmxpbmUoaCA9IG1lYW4oUHJpY2UpLCBsdHkgPSAzLCBjb2wgPSAicmVkIikNCmBgYA0KDQojIyMjIGx0eSBnaXZlcyBjaGFyYWN0ZXJpc3RpY3Mgb2YgdGhlIGxpbmUgKGxpbmUgdHlwZSkNCi0gbHR5MSA9IHNvbGlkDQotIGx0eTIgPSBkYXNoZWQNCi0gbHR5MyA9IGRvdHRlZA0KLSBsdHk0ID0gZG90LWRhc2gNCi0gbHR5NSA9IGxvbmcgZGFzaA0KDQojIyMgTG9vayBhdCB0aGUgZml0dGVkIHZhbHVlcyBhbmQgcmVzaWR1YWxzDQpgYGB7cn0NCnBvcnNjaGVfbG0kcmVzaWR1YWxzDQpjYmluZChNaWxlYWdlLCBQcmljZSwgcG9yc2NoZV9sbSRmaXR0ZWQudmFsdWVzLCBwb3JzY2hlX2xtJHJlc2lkdWFscykNCmBgYA0KDQojIyMgRG8gdGhlIHNhbWUgdGhpbmcsIGJ1dCBvbmx5IGxvb2sgYXQgdGhlIGZpcnN0IDUgcm93cw0KYGBge3J9DQpjYmluZChNaWxlYWdlLCBQcmljZSwgcG9yc2NoZV9sbSRmaXR0ZWQudmFsdWVzLCBwb3JzY2hlX2xtJHJlc2lkdWFscylbMTo1LCBdDQpgYGANCg0KIyMjIE9yIHVzZSB0aGUgaGVhZCBmdW5jdGlvbiB0byBsb29rIGF0IHRoZSB0b3Agb2YgdGhlIGRhdGFzZXQNCmBgYHtyfQ0KaGVhZChjYmluZChNaWxlYWdlLCBQcmljZSwgcG9yc2NoZV9sbSRmaXR0ZWQudmFsdWVzLCBwb3JzY2hlX2xtJHJlc2lkdWFscykpDQpgYGANCg0KIyMjIFNhdmUgdGhlIHRhYmxlDQpgYGB7cn0NCnBvcnNjaGVUYWJsZSA8LSBkYXRhLmZyYW1lKE1pbGVhZ2UsIFByaWNlLCBmaXRzID0gcG9yc2NoZV9sbSRmaXR0ZWQudmFsdWVzLCByZXNpZHMgPSBwb3JzY2hlX2xtJHJlc2lkdWFscykNCmBgYA0KDQojIyMgVmlldyBjb2x1bW4gbmFtZXMNCmBgYHtyfQ0KY29sbmFtZXMocG9yc2NoZVRhYmxlKQ0KYGBgDQoNCiMjIyBDaGFuZ2UgdGhlIG5hbWVzIG9mIGNvbHVtbnMgMyBhbmQgNA0KYGBge3J9DQpuYW1lcyhwb3JzY2hlVGFibGUpW2MoMywgNCldID0gYygiZml0cyIsICJyZXNpZHMiKQ0KYGBgDQoNCiMjIyBDaGVjayB5b3VyIHdvcmsNCmBgYHtyfQ0Kc3RyKHBvcnNjaGVUYWJsZSkNCnBvcnNjaGVUYWJsZQ0KYGBgDQoNCiMjIERheSAyOiBDb25kaXRpb25zIGZvciBMaW5lYXIgUmVncmVzc2lvbg0KUmVvcGVuIHlvdXIgUiB3b3JrIGZyb20geWVzdGVyZGF5IGFuZCB0aGUgUG9yc2NoZSBQcmljZXMgZGF0YS4NCg0KVGhpcyB3aWxsIHRha2UgdXMgdGhyb3VnaCAxLjIgQ29uZGl0aW9ucyBmb3IgTGluZWFyIFJlZ3Jlc3Npb24gYW5kIDEuMyBBc3Nlc3NpbmcgQ29uZGl0aW9ucw0KDQojIyMgU3VtbWFyeSBzdGF0aXN0aWNzIGZvciBwb3JzY2hlX2xtDQpUaGUgUmVzaWR1YWwgU3RhbmRhcmQgRXJyb3IgbWVhc3VyZXMgdGhlIHN0YW5kYXJkIGRldmlhdGlvbiBvZiB0aGUgcmVzaWR1YWxzIGluIHRoZSBtb2RlbA0KYGBge3J9DQpzdW1tYXJ5KHBvcnNjaGVfbG0pDQpgYGANCg0KIyMjIExvb2sgYXQgYSBwbG90IG9mIHRoZSByZXNpZHVhbHMNCmBgYHtyfQ0KcGxvdChwb3JzY2hlX2xtJHJlc2lkdWFscywgbWFpbiA9ICJSZXNpZHVhbHMiLCB4bGFiID0gIkluZGV4IiwgeWxhYiA9ICJSZXNpZHVhbHMiKQ0KYWJsaW5lKGggPSAwLCBsdHkgPSAyLCBjb2wgPSAiYmx1ZSIpDQpgYGANCg0KIyMjIExvb2sgYXQgdGhlIGRpc3RyaWJ1dGlvbiBvZiByZXNpZHVhbHMNCmBgYHtyfQ0KaGlzdChwb3JzY2hlX2xtJHJlc2lkdWFscywgbWFpbiA9ICJIaXN0b2dyYW0gb2YgUmVzaWR1YWxzIiwgeGxhYiA9ICJSZXNpZHVhbHMiLCB5bGFiID0gIkZyZXF1ZW5jeSIpDQpgYGANClRoZSBoaXN0b2dyYW0gYXBwZWFycyB0byBiZSAqKnVuaW1vZGFsLCByb3VnaGx5IHN5bW1ldHJpYyoqDQoNCmlmIG91ciByZXNpZHVhbHMgYXJlIChuZWFybHkpIG5vcm1hbGx5IGRpc3RyaWJ1dGVkLCB3ZSBoYXZlIHNvbWUgZGVncmVlIG9mICoqY29uZmlkZW5jZSoqIGluIG91ciBtb2RlbA0KDQojIyMgUGxvdCBvdXIgZGlzdHJpYnV0aW9uIG9mIHJlc2lkdWFscyBhZ2FpbnN0IGEgbm9ybWFsIGRpc3RyaWJ1dGlvbg0KYGBge3J9DQpxcW5vcm0ocG9yc2NoZV9sbSRyZXNpZHVhbHMpDQpxcWxpbmUocG9yc2NoZV9sbSRyZXNpZHVhbHMpDQpgYGANCg0KV2Ugc2hvdWxkIHNlZSBhIHNvbWV3aGF0IGxpbmVhciBkaXN0cmlidXRpb24gd2l0aCBubyBwcm9ub3VuY2VkIHBhdHRlcm4NCg0KSGVyZSdzIGEgbW9yZSBhZHZhbmNlZCB3YXkgdG8gY3JlYXRlIGEgZnVuY3Rpb24gd2hpY2ggd2lsbCByZXR1cm4gdGhlIHFxbm9ybSBhbmQgcXFsaW5lIHlvdSBqdXN0IGRpZA0KYGBge3J9DQpxcW5vcm1GdW5jdGlvbiA8LSBmdW5jdGlvbih4KSB7DQogIHFxbm9ybSh4KQ0KICBxcWxpbmUoeCkNCn0NCnFxbm9ybUZ1bmN0aW9uKHBvcnNjaGVfbG0kcmVzaWR1YWxzKQ0KYGBg</div>
 
 
 
@@ -843,6 +949,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("SimpleLinearRegressionNotes.Rmd");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

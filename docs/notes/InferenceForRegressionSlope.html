@@ -225,6 +225,96 @@ window.buildTabsets = function(tocID) {
 };
 
 </script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('show');
+    });
+  });
+  $("#rmd-hide-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('hide');
+    });
+  });
+
+  // index for unique code element ids
+  var currentIndex = 1;
+
+  // select all R code blocks
+  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia, pre.foldable');
+  rCodeBlocks.each(function() {
+    // skip if the block has fold-none class
+    if ($(this).hasClass('fold-none')) return;
+
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    var showThis = (show || $(this).hasClass('fold-show')) && !$(this).hasClass('fold-hide');
+    var id = 'rcode-643E0F36' + currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (showThis ? 'Hide' : 'Show') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm code-folding-btn pull-right float-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-bs-toggle', 'collapse') // BS5
+        .attr('data-target', '#' + id)
+        .attr('data-bs-target', '#' + id)   // BS5
+        .attr('aria-expanded', showThis)
+        .attr('aria-controls', id);
+
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+
+    div.before(buttonRow);
+
+    // show the div if necessary
+    if (showThis) div.collapse('show');
+
+    // update state of button on show/hide
+    //   * Change text
+    //   * add a class for intermediate states styling
+    div.on('hide.bs.collapse', function () {
+      showCodeText.text('Show');
+      showCodeButton.addClass('btn-collapsing');
+    });
+    div.on('hidden.bs.collapse', function () {
+      showCodeButton.removeClass('btn-collapsing');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide');
+      showCodeButton.addClass('btn-expanding');
+    });
+    div.on('shown.bs.collapse', function () {
+      showCodeButton.removeClass('btn-expanding');
+    });
+
+  });
+
+}
+</script>
+<script>
+window.initializeSourceEmbed = function(filename) {
+  $("#rmd-download-source").click(function() {
+    var src = $("#rmd-source-code").html();
+    var a = document.createElement('a');
+    a.href = "data:text/x-r-markdown;base64," + src;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+};
+</script>
 
 <style type="text/css">
 code{white-space: pre-wrap;}
@@ -340,6 +430,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 </script>
 
 
+<style type="text/css">
+#rmd-source-code {
+display: none;
+}
+</style>
 
 
 
@@ -420,6 +515,9 @@ display: none;
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -436,10 +534,17 @@ display: none;
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Inference for Regression Slope Notes</h1>
-<h4 class="date">Last Updated: September 23, 2024 08:47:28</h4>
+<h4 class="date">Last Updated: September 23, 2024 08:59:09</h4>
 
 </div>
 
@@ -587,6 +692,7 @@ be more narrow than Prediction Intervals</p>
 </div>
 </div>
 
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkluZmVyZW5jZSBmb3IgUmVncmVzc2lvbiBTbG9wZSBOb3RlcyINCm91dHB1dDoNCiAgaHRtbF9kb2N1bWVudDoNCiAgICB0b2M6IHRydWUNCiAgICB0aGVtZTogZGFya2x5DQogICAgaGlnaGxpZ2h0OiBweWdtZW50cw0KICAgIGNvZGVfZG93bmxvYWQ6IHRydWUNCmxhbmc6IGVuLVVTDQpkYXRlOiAiTGFzdCBVcGRhdGVkOiBgciBmb3JtYXQoU3lzLkRhdGUoKSwgJyVCICVkLCAlWScpYCBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVIOiVNOiVTJylgIg0KLS0tDQoNCiMjIFVzaW5nIFRlc3RzIGFuZCBJbnRlcnZhbHMNCg0KIyMjIFVzZSBQb3JzY2hlUHJpY2UgZmlsZQ0KYGBge3J9DQpwb3JzY2hlIDwtIHJlYWQuY3N2KCIuLi9kYXRhL1BvcnNjaGVQcmljZS5jc3YiLCBoZWFkZXIgPSBUUlVFKQ0KYXR0YWNoKHBvcnNjaGUpDQpgYGANCg0KIyMjIFJ1biB0aGUgbGluZWFyIG1vZGVsDQpgYGB7cn0NCnBvcnNjaGUubG0gPC0gbG0oUHJpY2UgfiBNaWxlYWdlLCBkYXRhID0gcG9yc2NoZSkNCmBgYA0KDQojIyMgUnVuIGEgc3VtbWFyeSBmb3IgdGhlIGxpbmVhciBtb2RlbA0KYGBge3J9DQpzdW1tYXJ5KHBvcnNjaGUubG0pDQpgYGANCg0KIyMjIENvbXB1dGUgOTUlIENvbmZpZGVuY2UgSW50ZXJ2YWxzIGZvciBjb2VmZmljaWVudHMNCjk1JSBpcyB0aGUgZGVmYXVsdC4gWW91IGNhbiBjaGFuZ2UgdGhlIGNvbmZpZGVuY2UgbGV2ZWwgYnkgY2hhbmdpbmcgdGhlIHZhbHVlIG9mIGBjb25mLmxldmVsYC4NCmBgYHtyfQ0KY29uZmludChwb3JzY2hlLmxtLCBsZXZlbCA9IC45NSkNCmBgYA0KDQpUaGlzIGFncmVlcyB3aXRoIG91ciBtb3JlIG1hbnVhbCBjb21wdXRhdGlvbiBvbiBwYXBlci4NCg0KIyMjIFRvIHNlZSB0aGUgY29lZmZpY2llbnRzIGZvciBlaXRoZXIganVzdCB0aGUgSW50ZXJjZXB0cywgb3IganVzdCB0aGUgc2xvcGUNClJlbWVtYmVyaW5nIHRoYXQgLjk1IGlzIHRoZSBkZWZhdWx0IGxldmVsOg0KYGBge3J9DQpjb25maW50KHBvcnNjaGUubG0sIDEpDQpjb25maW50KHBvcnNjaGUubG0sIDIpDQpgYGANCg0KIyMjIFRvIGZpbmQgdGhlIENvcnJlbGF0aW9uIENvZWZmaWNpZW50IGFuZCBDb2VmZmljaWVudCBvZiBEZXRlcm1pbmF0aW9uDQpgYGB7cn0NCmNvcihNaWxlYWdlLCBQcmljZSkNCmNvcihNaWxlYWdlLCBQcmljZSleMg0KYGBgDQoNCiMjIEZpbmRpbmcgUHJlZGljdGlvbiBJbnRlcnZhbHMgdXNpbmcgUi1QcmVkaWN0DQpDb25zaWRlciBhIFBvcnNjaGUgd2l0aCA1MCwwMDAgbWlsZXMuIFdoYXQgaXMgdGhlIDk1JSBwcmVkaWN0aW9uIGludGVydmFsIGZvciB0aGUgcHJpY2Ugb2YgdGhpcyBjYXI/DQoNCj4gTm90ZTogQ29uZmlkZW5jZSBJbnRlcnZhbHMgc3BlYWsgdG8gdGhlIHBsYWNlbWVudCBvZiB0aGUgbWVhbiwgd2hpbGUgUHJlZGljdGlvbiBJbnRlcnZhbHMgc3BlYWsgdG8gdGhlIHBsYWNlbWVudCBvZiBhIHNwZWNpZmljIHZhbHVlDQoNCj4gR2l2ZW4gYWxsIG90aGVyIHZhbHVlcyBiZWluZyBlcXVhbCwgQ29uZmlkZW5jZSBJbnRlcnZhbHMgd2lsbCBhbHdheXMgYmUgbW9yZSBuYXJyb3cgdGhhbiBQcmVkaWN0aW9uIEludGVydmFscw0KDQojIyMgRmlyc3QsIGZpbmQgdGhlIDk1JSBDb25maWRlbmNlIEludGVydmFsDQpgYGB7cn0NCm5ld0RhdGEgPC0gZGF0YS5mcmFtZShNaWxlYWdlID0gNTApDQpwcmVkaWN0KHBvcnNjaGUubG0sIG5ld0RhdGEsIGludGVydmFsID0gImNvbmZpZGVuY2UiLCBsZXZlbCA9IC45NSkNCmBgYA0KDQojIyMgTmV4dCwgZmluZCB0aGUgOTUlIFByZWRpY3Rpb24gSW50ZXJ2YWwNCmBgYHtyfQ0KcHJlZGljdChwb3JzY2hlLmxtLCBuZXdEYXRhLCBpbnRlcnZhbCA9ICJwcmVkaWN0aW9uIiwgbGV2ZWwgPSAuOTUpDQpgYGANCg0KIyMjIyBTYXZlIHRoaXMgcHJlZGljdC5wbG90cyBmdW5jdGlvbiBmb3IgdXNlIGluIGxhdGVyIGxhYnMNCmBgYHtyfQ0KcHJlZGljdC5wbG90cyA8LSBmdW5jdGlvbih4LCB5LCBjb25mLmxldmVsID0gLjk1KSB7DQogICMgeCA9IGV4cGxhbmF0b3J5IHZhcmlhYmxlDQogICMgeSA9IHJlc3BvbnNlIHZhcmlhYmxlDQogIG1vZGVsIDwtIGxtKHkgfiB4KQ0KICBuZXcgPC0gc2VxKG1pbih4KSwgbWF4KHgpLCBsZW5ndGggPSAxMDEpDQogIENJIDwtIHByZWRpY3QobW9kZWwsIGxpc3QoeCA9IG5ldyksIGludCA9ICJjb25maWRlbmNlIiwgbGV2ZWwgPSBjb25mLmxldmVsKQ0KICBQSSA8LSBwcmVkaWN0KG1vZGVsLCBsaXN0KHggPSBuZXcpLCBpbnQgPSAicHJlZGljdGlvbiIsIGxldmVsID0gY29uZi5sZXZlbCkNCiAgcGxvdCh4LCB5LCB5bGltID0gcmFuZ2UoeSwgUElbLCAzXSksIG1haW4gPSAiOTUlIENvbmZpZGVuY2UgYW5kIFByZWRpY3Rpb24gSW50ZXJ2YWxzIiwgeGxhYiA9ICJNaWxlYWdlIiwgeWxhYiA9ICJQcmljZSIpDQogIGFibGluZShtb2RlbCkgIyB0byBvYnRhaW4gc29saWQgcmVncmVzc2lvbiBsaW5lDQogIHBvaW50cyhuZXcsIENJWywgMl0sIHR5cGUgPSAibCIsIGNvbCA9ICJyZWQiLCBsdHkgPSAyKQ0KICBwb2ludHMobmV3LCBDSVssIDNdLCB0eXBlID0gImwiLCBjb2wgPSAicmVkIiwgbHR5ID0gMikNCiAgcG9pbnRzKG5ldywgUElbLCAyXSwgdHlwZSA9ICJsIiwgY29sID0gImJsdWUiLCBsdHkgPSAzKQ0KICBwb2ludHMobmV3LCBQSVssIDNdLCB0eXBlID0gImwiLCBjb2wgPSAiYmx1ZSIsIGx0eSA9IDMpDQp9DQpgYGANCg0KIyMjIFJ1biBwcmVkaWN0LnBsb3RzIGZvciBvdXIgbW9kZWwNCmBgYHtyfQ0KcHJlZGljdC5wbG90cyhNaWxlYWdlLCBQcmljZSkNCmBgYA==</div>
 
 
 
@@ -620,6 +726,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("InferenceForRegressionSlope.Rmd");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

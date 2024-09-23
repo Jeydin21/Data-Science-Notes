@@ -225,6 +225,96 @@ window.buildTabsets = function(tocID) {
 };
 
 </script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('show');
+    });
+  });
+  $("#rmd-hide-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('hide');
+    });
+  });
+
+  // index for unique code element ids
+  var currentIndex = 1;
+
+  // select all R code blocks
+  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia, pre.foldable');
+  rCodeBlocks.each(function() {
+    // skip if the block has fold-none class
+    if ($(this).hasClass('fold-none')) return;
+
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    var showThis = (show || $(this).hasClass('fold-show')) && !$(this).hasClass('fold-hide');
+    var id = 'rcode-643E0F36' + currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (showThis ? 'Hide' : 'Show') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm code-folding-btn pull-right float-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-bs-toggle', 'collapse') // BS5
+        .attr('data-target', '#' + id)
+        .attr('data-bs-target', '#' + id)   // BS5
+        .attr('aria-expanded', showThis)
+        .attr('aria-controls', id);
+
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+
+    div.before(buttonRow);
+
+    // show the div if necessary
+    if (showThis) div.collapse('show');
+
+    // update state of button on show/hide
+    //   * Change text
+    //   * add a class for intermediate states styling
+    div.on('hide.bs.collapse', function () {
+      showCodeText.text('Show');
+      showCodeButton.addClass('btn-collapsing');
+    });
+    div.on('hidden.bs.collapse', function () {
+      showCodeButton.removeClass('btn-collapsing');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide');
+      showCodeButton.addClass('btn-expanding');
+    });
+    div.on('shown.bs.collapse', function () {
+      showCodeButton.removeClass('btn-expanding');
+    });
+
+  });
+
+}
+</script>
+<script>
+window.initializeSourceEmbed = function(filename) {
+  $("#rmd-download-source").click(function() {
+    var src = $("#rmd-source-code").html();
+    var a = document.createElement('a');
+    a.href = "data:text/x-r-markdown;base64," + src;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+};
+</script>
 
 <style type="text/css">
 code{white-space: pre-wrap;}
@@ -340,6 +430,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
 </script>
 
 
+<style type="text/css">
+#rmd-source-code {
+display: none;
+}
+</style>
 
 
 
@@ -420,6 +515,9 @@ display: none;
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -436,10 +534,17 @@ display: none;
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Outliers and Influential Points Notes</h1>
-<h4 class="date">Last Updated: September 18, 2024 08:57:49</h4>
+<h4 class="date">Last Updated: September 23, 2024 08:59:12</h4>
 
 </div>
 
@@ -663,6 +768,7 @@ are at <code>177279, 152082, 176967, 152846, 184312</code>.</p>
 </div>
 </div>
 
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIk91dGxpZXJzIGFuZCBJbmZsdWVudGlhbCBQb2ludHMgTm90ZXMiDQpvdXRwdXQ6DQogIGh0bWxfZG9jdW1lbnQ6DQogICAgdG9jOiB0cnVlDQogICAgdGhlbWU6IGRhcmtseQ0KICAgIGhpZ2hsaWdodDogcHlnbWVudHMNCiAgICBjb2RlX2Rvd25sb2FkOiB0cnVlDQpsYW5nOiBlbi1VUw0KZGF0ZTogIkxhc3QgVXBkYXRlZDogYHIgZm9ybWF0KFN5cy5EYXRlKCksICclQiAlZCwgJVknKWAgYHIgZm9ybWF0KFN5cy50aW1lKCksICclSDolTTolUycpYCINCi0tLQ0KDQpBbmFseXplIHBvdGVudGlhbCBvdXRsaWVycyBpbiBhIGRhdGFzZXQgdXNpbmcgcmVzaWR1YWxzDQoNCiMjIEludHJvZHVjdGlvbiB0byBzdGFuZGFyZGl6ZWQgYW5kIHN0dWRlbnRpemVkIHJlc2lkdWFscw0KIyMjIyBMb2FkIExvbmdKdW1wT2x5bXBpY3MgZGF0YXNldA0KYGBge3J9DQpqdW1wIDwtIHJlYWQuY3N2KCIuLi9kYXRhL0xvbmdKdW1wT2x5bXBpY3MuY3N2IiwgaGVhZGVyID0gVFJVRSkNCmF0dGFjaChqdW1wKQ0KYGBgDQoNCiMjIyBMb29rIGF0IHRoZSBwbG90IG9mIGdvbGQgbWVkYWwgd2lubmluZyBqdW1wcywgYnkgeWVhcg0KYGBge3J9DQpwbG90KEdvbGQgfiBZZWFyLCB4bGFiID0gIlllYXIiLCB5bGFiID0gIkdvbGQgTWVkYWwgSnVtcCAobWV0ZXJzKSIpDQpqdW1wLmxtIDwtIGxtKEdvbGQgfiBZZWFyKQ0KYWJsaW5lKGp1bXAubG0sIGNvbCA9ICJyZWQiKQ0KYGBgDQoNCk5vdGljZSB0aGUgMTk2OCBwZXJmb3JtYW5jZSBvZiA4LjkgbWV0ZXJzLiBJcyBpdCBhbiBvdXRsaWVyPw0KDQojIyMgTG9vayBhdCB0aGUgcmVzaWR1YWxzDQpgYGB7cn0NCmp1bXAubG0kcmVzaWR1YWxzDQpwbG90KGp1bXAubG0kcmVzaWR1YWxzIH4ganVtcC5sbSRmaXR0ZWQudmFsdWVzLCB4bGFiID0gIkZpdHRlZCBWYWx1ZXMiLCB5bGFiID0gIlJlc2lkdWFscyIsIG1haW4gPSAiUmVzaWR1YWxzIHZzLiBGaXR0ZWQgVmFsdWVzIikNCmFibGluZShoID0gMCwgbHR5ID0gMiwgY29sID0gInJlZCIpDQpgYGANCg0KIyMjIFdoYXQgaXMgdGhlIHJlc2lkdWFsIG9mIHRoZSAxOTY4IGp1bXA/DQpgYGB7cn0NCmp1bXAubG0kcmVzaWR1YWxzWzE2XQ0KYGBgDQoNCiMjIyBMb2FkIHRoZSBNQVNTIGxpYnJhcnkgKG5lY2Vzc2FyeSBmb3Igc3RhbmRhcmRpemVkIGFuZCBzdHVkZW50aXplZCByZXNpZHVhbHMpDQpgYGB7cn0NCmxpYnJhcnkoTUFTUykNCmBgYA0KDQojIyMgTG9vayBhdCB0aGUgc3RhbmRhcmRpemVkIHJlc2lkdWFscw0KYGBge3J9DQpzdGRyZXMoanVtcC5sbSkNCnBsb3Qoc3RkcmVzKGp1bXAubG0pIH4ganVtcC5sbSRmaXQsIHlsaW0gPSBjKC00LCA0KSwgeGxhYiA9ICJGaXR0ZWQgVmFsdWVzIiwgeWxhYiA9ICJTdGFuZGFyZGl6ZWQgUmVzaWR1YWxzIiwgbWFpbiA9ICJTdGFuZGFyZGl6ZWQgUmVzaWR1YWxzIHZzLiBGaXR0ZWQgVmFsdWVzIikNCmFibGluZShoID0gLTIsIGx0eSA9IDMsIGNvbCA9ICJyZWQiKQ0KYWJsaW5lKGggPSAyLCBsdHkgPSAzLCBjb2wgPSAicmVkIikNCmBgYA0KDQojIyMgVGhlIHN0YW5kYXJkaXplZCByZXNpZHVhbCBvZiB0aGUgMTk2OCBqdW1wIHdhczoNCmBgYHtyfQ0Kc3RkcmVzKGp1bXAubG0pWzE2XQ0KYGBgDQoNCi4uLkJ1dCB0aGUgZXhpc3RlbmNlIG9mIHRoZSBwb3RlbnRpYWwgb3V0bGllciBhZmZlY3RzIHRoZSByZWdyZXNzaW9uIGxpbmUuLi4NCg0KR28gYmFjayB0byB0aGUgb3JpZ2luYWwgcGxvdCBvZiAoR29sZCB+IFllYXIpDQoNCiMjIyBBZGQgYSByZWQgbGluZSB0byBzaG93IHdoYXQgdGhlIHJlZ3Jlc3Npb24gbGluZSB3b3VsZCBsb29rIGxpa2Ugd2l0aG91dCB0aGUgMTk2OCBkYXRhDQpgYGB7cn0NCm5vNjguZGYgPC0ganVtcFshWWVhciA9PSAiMTk2OCIsIF0NCm5vNjgubG0gPC0gbG0obm82OC5kZiRHb2xkIH4gbm82OC5kZiRZZWFyKQ0KcGxvdChHb2xkIH4gWWVhciwgeGxhYiA9ICJZZWFyIiwgeWxhYiA9ICJHb2xkIE1lZGFsIEp1bXAgKG1ldGVycykiLCBtYWluID0gIkdvbGQgTWVkYWwgV2lubmluZyBMb25nIEp1bXBzIikNCmFibGluZShqdW1wLmxtKQ0KYWJsaW5lKG5vNjgubG0sIGNvbCA9ICJyZWQiLCBsdHkgPSAzKQ0KYGBgDQoNCiMjIyBXaGF0IHdvdWxkIGJlIHRoZSBzdGFuZGFyZGl6ZWQgcmVzaWR1YWwgb2YgdGhlIHBvaW50IGlmIHRoZSByZWdyZXNzaW9uIGxpbmUgd2VyZSBjb21wdXRlZCB3aXRob3V0IGl0IChzdHVkZW50aXplZCByZXNpZHVhbCk/DQpgYGB7cn0NCnN0dWRfcmVzaWRzIDwtIHN0dWRyZXMoanVtcC5sbSkNCnN0dWRfcmVzaWRzDQpgYGANCg0KIyMjIFN0dWRlbnRpemVkIFJlc2lkdWFsIFBsb3QNCmBgYHtyfQ0KcGxvdChzdHVkX3Jlc2lkcyB+IFllYXIsIHlsaW0gPSBjKC00LCA0KSwgeGxhYiA9ICJZZWFyIiwgeWxhYiA9ICJTdHVkZW50aXplZCBSZXNpZHVhbHMiLCBtYWluID0gIlN0dWRlbnRpemVkIFJlc2lkdWFscyB2cy4gWWVhciIpDQphYmxpbmUoaCA9IC0yLCBsdHkgPSAzLCBjb2wgPSAicmVkIikNCmFibGluZShoID0gMiwgbHR5ID0gMywgY29sID0gInJlZCIpDQpgYGANCg0KIyMjIFRoZSBzdHVkZW50aXplZCByZXNpZHVhbCBvZiB0aGUgMTk2OCBqdW1wIHdhcw0KYGBge3J9DQpzdHVkX3Jlc2lkc1sxNl0NCmBgYA0KDQojIyMgTmV3IHByb2JsZW0NCmBgYHtyfQ0KZGV0YWNoKGp1bXApDQpgYGANCiMjIEFuYWx5emUgdGhlIFBhbG1CZWFjaCBkYXRhc2V0IGZvciBvdXRsaWVycw0KDQojIyMgTG9hZCB0aGUgUGFsbUJlYWNoIGRhdGFzZXQNCmBgYHtyfQ0KcGFsbSA8LSByZWFkLmNzdigiLi4vZGF0YS9QYWxtQmVhY2guY3N2IiwgaGVhZGVyID0gVFJVRSkNCmF0dGFjaChwYWxtKQ0KYGBgDQoNCiMjIyBTY2F0dGVyIHBsb3Qgb2YgdGhlIGRhdGENCmBgYHtyfQ0KcGxvdChCdWNoYW5hbiwgQnVzaCwgbWFpbiA9ICJTY2F0dGVyIFBsb3Qgb2YgVm90ZXMgZm9yIEJ1Y2hhbmFuIGFuZCBCdXNoIiwgeGxhYiA9ICJWb3RlcyBmb3IgQnVjaGFuYW4iLCB5bGFiID0gIlZvdGVzIGZvciBCdXNoIiwgcGNoID0gMTkpDQpgYGANCg0KIyMjIFN1bW1hcnkgc3RhdGlzdGljcyBmb3IgQnVjaGFuYW4NCmBgYHtyfQ0Kc3VtbWFyeShCdWNoYW5hbikNCmBgYA0KDQojIyMgU3VtbWFyeSBzdGF0aXN0aWNzIGZvciBCdXNoDQpgYGB7cn0NCnN1bW1hcnkoQnVzaCkNCmBgYA0KDQojIyMgRnVuY3Rpb24gdG8gaWRlbnRpZnkgb3V0bGllcnMgdXNpbmcgdGhlIElRUiBtZXRob2QNCmBgYHtyfQ0KaWRlbnRpZnlfb3V0bGllcnMgPC0gZnVuY3Rpb24oeCkgew0KICBRMSA8LSBxdWFudGlsZSh4LCAwLjI1KQ0KICBRMyA8LSBxdWFudGlsZSh4LCAwLjc1KQ0KICBJUVIgPC0gUTMgLSBRMQ0KICBsb3dlcl9ib3VuZCA8LSBRMSAtIDEuNSAqIElRUg0KICB1cHBlcl9ib3VuZCA8LSBRMyArIDEuNSAqIElRUg0KICBvdXRsaWVycyA8LSB4W3ggPCBsb3dlcl9ib3VuZCB8IHggPiB1cHBlcl9ib3VuZF0NCiAgcmV0dXJuKG91dGxpZXJzKQ0KfQ0KYGBgDQoNCiMjIyBPdXRsaWVycyBmb3IgQnVjaGFuYW4NCmBgYHtyfQ0KYnVjaGFuYW5fb3V0bGllcnMgPC0gaWRlbnRpZnlfb3V0bGllcnMoQnVjaGFuYW4pDQpidWNoYW5hbl9vdXRsaWVycw0KYGBgDQoNCiMjIyBPdXRsaWVycyBmb3IgQnVzaA0KYGBge3J9DQpidXNoX291dGxpZXJzIDwtIGlkZW50aWZ5X291dGxpZXJzKEJ1c2gpDQpidXNoX291dGxpZXJzDQpgYGANCg0KIyMjIEludGVycHJldGF0aW9uDQpJbiB0aGUgUGFsbSBCZWFjaCBkYXRhc2V0LCB3ZSBmb3VuZCBwb3NzaWJsZSBvdXRsaWVycyBieSB1c2luZyB0aGUgMS41IElRUiBydWxlLiBUaGVyZSBhcmUgcG9zc2libGUgb3V0bGllcnMgZm9yIEJ1Y2hhbmFuIGF0IGA3ODksIDY1MCwgODM2LCAzNDA3LCAxMDEwYC4gRm9yIEJ1c2gsIHRoZSBwb3NzaWJsZSBvdXRsaWVycyBhcmUgYXQgYDE3NzI3OSwgMTUyMDgyLCAxNzY5NjcsIDE1Mjg0NiwgMTg0MzEyYC4=</div>
 
 
 
@@ -696,6 +802,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("OutliersNotes.Rmd");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
