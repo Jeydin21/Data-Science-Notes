@@ -68,19 +68,19 @@ predict(porsche.lm, newData, interval = "prediction", level = .95)
 
 #### Save this predict.plots function for use in later labs
 ```{r}
-predict.plots <- function(x,y, conf.level=.95) { 
-  # x = explanatory variable; 
-  # y = response variable. 
-  model <- lm(y ~ x) 
-  new <- seq(min(x), max(x), length = 101) 
-  CI <- predict(model, list(x = new), int = "confidence", level = conf.level) 
-  PI <- predict(model, list(x = new), int = "prediction", level = conf.level) 
-  plot(x, y, ylim = range(y, PI[ , 3])) 
-  abline(model) # to obtain solid regression line 
-  points(new, CI[ , 2], type = "l", col = "red", lty = 2) 
-  points(new, CI[ , 3], type = "l", col = "red", lty = 2) 
-  points(new, PI[ , 2], type = "l", col = "blue", lty = 3) 
-  points(new, PI[ , 3], type = "l", col = "blue", lty = 3) 
+predict.plots <- function(x, y, conf.level = .95) {
+  # x = explanatory variable
+  # y = response variable
+  model <- lm(y ~ x)
+  new <- seq(min(x), max(x), length = 101)
+  CI <- predict(model, list(x = new), int = "confidence", level = conf.level)
+  PI <- predict(model, list(x = new), int = "prediction", level = conf.level)
+  plot(x, y, ylim = range(y, PI[, 3]), main = "95% Confidence and Prediction Intervals", xlab = "Mileage", ylab = "Price")
+  abline(model) # to obtain solid regression line
+  points(new, CI[, 2], type = "l", col = "red", lty = 2)
+  points(new, CI[, 3], type = "l", col = "red", lty = 2)
+  points(new, PI[, 2], type = "l", col = "blue", lty = 3)
+  points(new, PI[, 3], type = "l", col = "blue", lty = 3)
 }
 ```
 
