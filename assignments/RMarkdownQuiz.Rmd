@@ -18,9 +18,9 @@ attach(baseball)
 
 ###  Use and describe graphical displays (dotplot, histogram, boxplot)
 ```{r}
-hist(Time, main = "Histogram of Time", xlab = "Time (minutes)", col = "lightblue")
-boxplot(Time, main = "Boxplot of Time", ylab = "Time (minutes)", col = "lightgreen")
-plot(Time, main = "Dotplot of Time", ylab = "Time (minutes)")
+stripchart(Time, method = "stack", main = "Dotplot of Time", xlab = "Time (minutes)", ylab = "Frequency", pch = 19, col = "black")
+hist(Time, main = "Histogram of Time", xlab = "Time (minutes)", col = "lightblue", breaks = 10)
+boxplot(Time, main = "Boxplot of Time", xlab = "Time (minutes)", col = "lightblue", horizontal = TRUE)
 ```
 
 ###  Report descriptive statistics 
@@ -38,9 +38,16 @@ outliers
 ## Examine scatterplots to investigate which of the quantitative predictor variables appears to be the best single predictor of time.
 ```{r}
 plot(Runs, Time, main = "Dotplot of Time vs Runs", xlab = "Runs", ylab = "Time (minutes)")
+abline(lm(Time ~ Runs), col = "red")
+
 plot(Margin, Time, main = "Dotplot of Time vs Margin", xlab = "Margin", ylab = "Time (minutes)")
+abline(lm(Time ~ Margin), col = "red")
+
 plot(Pitchers, Time, main = "Dotplot of Time vs Pitchers", xlab = "Pitchers", ylab = "Time (minutes)")
+abline(lm(Time ~ Pitchers), col = "red")
+
 plot(Attendance, Time, main = "Dotplot of Time vs Attendance", xlab = "Attendance", ylab = "Time (minutes)")
+abline(lm(Time ~ Attendance), col = "red")
 ```
 
 ###  Comment on what the scatterplots reveal
@@ -83,5 +90,6 @@ par(mfrow = c(2, 2))
 plot(time.lm_no_outlier, which = 1:4, main = "Residual Plots (No Outlier)")
 ```
 
-## Comment on the extent to which omitting the outlier changed the analysis and your conclusions. 
-Ommitting the outlier changed the regression equation slightly, but the overall analysis and conclusions remained the same. The outlier had a significant impact on the model, but the relationship between `Time and Pitchers` remained strong even without the outlier.
+## Comment on the extent to which omitting the outlier changed the analysis and your conclusions.
+
+Ommitting the outlier made the slope of the regression line steeper and the y-interval higher.

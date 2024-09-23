@@ -17,5 +17,5 @@ Notes I take in my Data Science class in R and R Markdown
   - [Test 0916](assignments/Test0916)
   - [[1.4] Transformations Notes](notes/TransformationsNotes)
   - [[1.5] Outliers and Influential Points Notes](notes/OutliersNotes)
-- #### R Markdown
-  - [R Markdown Quiz](assignments/RMarkdownQuiz)
+- ### Inference for Simple Regression
+  - [[2.1] Inference for Regression Slope Notes](notes/InferenceForRegressionSlope)

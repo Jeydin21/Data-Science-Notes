@@ -1,0 +1,90 @@
+---
+title: "Inference for Regression Slope Notes"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+## Using Tests and Intervals
+
+### Use PorschePrice file
+```{r}
+porsche <- read.csv("../data/PorschePrice.csv", header = TRUE)
+attach(porsche)
+```
+
+### Run the linear model
+```{r}
+porsche.lm <- lm(Price ~ Mileage, data = porsche)
+```
+
+### Run a summary for the linear model
+```{r}
+summary(porsche.lm)
+```
+
+### Compute 95% Confidence Intervals for coefficients
+95% is the default. You can change the confidence level by changing the value of `conf.level`.
+```{r}
+confint(porsche.lm, level = .95)
+```
+
+This agrees with our more manual computation on paper.
+
+### To see the coefficients for either just the Intercepts, or just the slope
+Remembering that .95 is the default level:
+```{r}
+confint(porsche.lm, 1)
+confint(porsche.lm, 2)
+```
+
+### To find the Correlation Coefficient and Coefficient of Determination
+```{r}
+cor(Mileage, Price)
+cor(Mileage, Price)^2
+```
+
+## Finding Prediction Intervals using R-Predict
+Consider a Porsche with 50,000 miles. What is the 95% prediction interval for the price of this car?
+
+> Note: Confidence Intervals speak to the placement of the mean, while Prediction Intervals speak to the placement of a specific value
+
+> Given all other values being equal, Confidence Intervals will always be more narrow than Prediction Intervals
+
+### First, find the 95% Confidence Interval
+```{r}
+newData <- data.frame(Mileage = 50)
+predict(porsche.lm, newData, interval = "confidence", level = .95)
+```
+
+### Next, find the 95% Prediction Interval
+```{r}
+predict(porsche.lm, newData, interval = "prediction", level = .95)
+```
+
+#### Save this predict.plots function for use in later labs
+```{r}
+predict.plots <- function(x,y, conf.level=.95) { 
+  # x = explanatory variable; 
+  # y = response variable. 
+  model <- lm(y ~ x) 
+  new <- seq(min(x), max(x), length = 101) 
+  CI <- predict(model, list(x = new), int = "confidence", level = conf.level) 
+  PI <- predict(model, list(x = new), int = "prediction", level = conf.level) 
+  plot(x, y, ylim = range(y, PI[ , 3])) 
+  abline(model) # to obtain solid regression line 
+  points(new, CI[ , 2], type = "l", col = "red", lty = 2) 
+  points(new, CI[ , 3], type = "l", col = "red", lty = 2) 
+  points(new, PI[ , 2], type = "l", col = "blue", lty = 3) 
+  points(new, PI[ , 3], type = "l", col = "blue", lty = 3) 
+}
+```
+
+### Run predict.plots for our model
+```{r}
+predict.plots(Mileage, Price)
+```
