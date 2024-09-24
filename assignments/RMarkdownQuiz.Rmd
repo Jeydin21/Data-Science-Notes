@@ -76,7 +76,7 @@ plot(time.lm, which = 1:4, main = "Residual Plots")
 ```{r}
 residuals <- residuals(time.lm)
 max_residual <- which.max(abs(residuals))
-baseball[max_residual, ]
+outlier_point <- baseball[max_residual, ]
 ```
 
 ###  Is this the same game that you identified as an outlier based on your analysis of the time variable alone?
@@ -84,11 +84,13 @@ Yes it is, the outlier we found from the time variable analysis was the same gam
 
 ## Repeat the entire analysis from the previous exercise, with the outlier omitted
 ```{r}
+plot(baseball$Pitchers, baseball$Time, main = "Baseball Game Duration vs. Number of Pitchers", xlab = "Number of Pitchers", ylab = "Game Duration (minutes)", pch = 19)
+abline(time.lm, col = "blue", lwd = 2)
+
 baseball_no_outlier <- baseball[-max_residual, ]
 time.lm_no_outlier <- lm(Time ~ Pitchers, data = baseball_no_outlier)
-coef(time.lm_no_outlier)
-par(mfrow = c(2, 2))
-plot(time.lm_no_outlier, which = 1:4, main = "Residual Plots (No Outlier)")
+
+abline(time.lm_no_outlier, col = "red", lwd = 2, lty = 2)
 ```
 
 ## Comment on the extent to which omitting the outlier changed the analysis and your conclusions.
