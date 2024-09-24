@@ -19,3 +19,4 @@ Notes I take in my Data Science class in R and R Markdown
   - [[1.5] Outliers and Influential Points Notes](notes/OutliersNotes)
 - ### Inference for Simple Regression
   - [[2.1] Inference for Regression Slope Notes](notes/InferenceForRegressionSlope)
+  - [Regression Slope Homework](assignments/RegressionForInferenceSlopeHW)
