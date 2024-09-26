@@ -20,3 +20,4 @@ Notes I take in my Data Science class in R and R Markdown
 - ### Inference for Simple Regression
   - [[2.1] Inference for Regression Slope Notes](notes/InferenceForRegressionSlope)
   - [Regression Slope Homework](assignments/RegressionForInferenceSlopeHW)
+  - [[2.3] Regression and Correlation Notes](notes/RegressionAndCorrelationNotes)

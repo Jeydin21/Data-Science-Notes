@@ -1,0 +1,82 @@
+---
+title: "Regression and Correlation Notes"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+    code_download: true
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+### Load the AccordPrice dataset and attach it
+```{r}
+accord <- read.csv("../data/AccordPrice.csv", header = TRUE)
+accord
+attach(accord)
+```
+
+### Find the mean of the Price column
+```{r}
+mean(Price)
+```
+
+### Find the linear model of price over milaege
+```{r}
+lm(Price ~ Mileage)
+```
+
+### Make a new column of expected values according to the linear model
+```{r}
+accord$Expected <- predict(lm(Price ~ Mileage))
+accord$Mean <- mean(Price)
+accord[, c("Expected", "Mean")]
+attach(accord)
+```
+
+### Create ANOVA components
+```{r}
+accord$ModelSquares <- (Expected - Mean)^2
+accord$ResidualSquares <- (Price - Expected)^2
+accord$TotalSquares <- (Price - Mean)^2
+accord[, c("ModelSquares", "ResidualSquares", "TotalSquares")]
+```
+
+### Sum the ANOVA components
+```{r}
+SSM <- sum(accord$ModelSquares)
+SSE <- sum(accord$ResidualSquares)
+SST <- sum(accord$TotalSquares)
+c(SSM, SSE, SST)
+```
+
+### ANOVA Table
+```{r}
+anova(lm(Price ~ Mileage))
+```
+
+## Multiple methods to check linear relationship
+
+### Confidence Interval
+```{r}
+confint(lm(Price ~ Mileage))
+```
+
+### T-test for slope
+A t-test is the regression slope divided by the standard error of the regression
+```{r}
+summary(lm(Price ~ Mileage))
+```
+T-slope = `.1198 / .0141`
+
+### T-test for correlation
+```{r}
+cor.test(Mileage, Price)
+```
+
+With simple linear regression, tstat for r and tstat slope are identical.
+
+Also, F = t^2
+
+Not the case with multiple predictors.
