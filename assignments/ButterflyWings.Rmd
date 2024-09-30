@@ -1,0 +1,89 @@
+---
+title: "Butterfly Wings"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+    code_download: true
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+```{r, echo = FALSE}
+butterfly <- read.csv("../data/Butterflies.csv", header = TRUE)
+female_butterfly <- subset(butterfly, Sex == "Female")
+attach(female_butterfly)
+```
+
+### To study whether temperature and wing length are related, start with a scatterplot of wing length versus temperature
+```{r}
+plot(Temp, Wing, main = "Wing Length vs. Temperature (Female Butterflies)", xlab = "Temperature (°C)", ylab = "Wing Length (mm)", pch = 19, col = "blue")
+abline(lm(Wing ~ Temp), col = "red", lwd = 2)
+```
+
+### If the data seem to follow a roughly linear pattern, find a linear model to capture the trend
+```{r}
+model <- lm(Wing ~ Temp)
+summary(model)
+```
+
+### What linear model did you choose?
+```{r}
+model
+```
+
+### What does your model show in terms of variability?
+```{r}
+anova(model)
+```
+
+### Analyze your residuals
+```{r}
+plot(model$fitted.values, model$residuals, main = "Residuals vs Fitted", xlab = "Fitted Values", ylab = "Residuals", pch = 19, col = "blue")
+abline(h = 0, col = "red", lwd = 2)
+```
+
+### Are any of your residuals outliers?
+```{r}
+identify_outliers <- function(residuals) {
+  Q1 <- quantile(residuals, 0.25)
+  Q3 <- quantile(residuals, 0.75)
+  IQR <- Q3 - Q1
+  lower_bound <- Q1 - 1.5 * IQR
+  upper_bound <- Q3 + 1.5 * IQR
+  outliers <- residuals[residuals < lower_bound | residuals > upper_bound]
+  return(outliers)
+}
+
+outliers <- identify_outliers(model$residuals)
+outliers
+```
+
+### Does a test of the relationship show that the linear relationship is stronger than would happen by chance if your variables were not related?
+```{r}
+cor(Temp, Wing)
+cor.test(Temp, Wing)
+```
+
+### What proportion of variability in your response is explained by the model you chose?
+```{r}
+summary(model)$r.squared
+```
+
+### It is likely that your model is not perfect, but discuss what makes it a good model
+```{r}
+summary(model)
+```
+
+### On average, how much does your response value change as your explanatory values vary?
+```{r}
+summary(model)$coefficients
+```
+
+Building on your study, there could be other factors (like cloud cover and rainfall) that affect both temperatures and butterfly growth. Suppose we learn that the temperature in Greenland this summer is 3.0 degrees (Celsius). 
+
+### What size of female butterfly (of this species) do we expect to see next year?
+```{r}
+predict(model, data.frame(Temp = 3.0), interval = "confidence")
+```
