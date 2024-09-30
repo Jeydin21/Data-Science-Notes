@@ -1,0 +1,129 @@
+---
+title: "Intervals for Predictions Assignment"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+    code_download: true
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+```{r, echo = FALSE}
+sparrows <- read.csv("../data/Sparrows.csv")
+attach(sparrows)
+```
+
+Priscilla Erickson from Kenyon College collected data on a stratified random sample of 116 Savannah sparrows at Kent Island. The weight (in grams) and wing length (in mm) were obtained for birds from nests that were reduced, controlled, or enlarged.
+
+### 1. What is the slope of the least squares regression line for predicting sparrow weight from wing length?
+```{r}
+coef(lm(Weight ~ WingLength))[2]
+```
+
+### 2. Based on the regression output, what is the intercept of the least squares regression line for predicting sparrow weight from wing length?
+```{r}
+coef(lm(Weight ~ WingLength))[1]
+```
+
+### 3. Based on the regression output, what is the size of the typical error when predicting weight from wing length?
+```{r}
+summary(lm(Weight ~ WingLength))
+```
+
+### 4. What are the degrees of freedom associated with the standard regression error when predicting weight from wing length for these sparrows?
+```{r}
+summary(lm(Weight ~ WingLength))$df[2]
+```
+
+### 5. Construct and interpret the following plots for the residuals of this model.
+In each case, discusswhat the plot tells you about potential problems (if any) with the regression conditions.
+
+#### 5a. Histogram of the residuals.
+```{r}
+hist(residuals(lm(Weight ~ WingLength)), main = "Histogram of Residuals", xlab = "Residuals", ylab = "Frequency", col = "lightblue")
+```
+
+#### 5b. Normal probability plot of the residuals.
+```{r}
+qqnorm(residuals(lm(Weight ~ WingLength)), main = "Normal Probability Plot of Residuals", xlab = "Theoretical Quantiles", ylab = "Sample Quantiles")
+qqline(residuals(lm(Weight ~ WingLength)), col = "red", lwd = 2)
+```
+
+#### 5c. Scatterplot that includes the least squares line. Are there any obvious outliers or influential points in this plot?
+```{r}
+plot(Weight ~ WingLength, data = sparrows, main = "Weight vs Wing Length", xlab = "Wing Length (mm)", ylab = "Weight (g)")
+abline(lm(Weight ~ WingLength), col = "red", lwd = 2)
+```
+
+### 6. Is the slope of the least squares regression line for predicting Weight from WingLength significantly different from zero? 
+Show details to support your answer.
+```{r}
+summary(lm(Weight ~ WingLength))$coefficients[1, 1]
+```
+
+### 7. Construct and interpret a 95% confidence interval for the slope coefficient in this model.
+```{r}
+confint(lm(Weight ~ WingLength))[2, ]
+```
+
+### 8. Does your confidence interval in #7 contain zero? How is this related to #6
+
+It does not contain zero, which is related to the fact that the slope of the least squares regression line is significantly different from zero.
+
+### 9. Is there a significant association between weight and wing length? 
+Use the correlation coefficient between Weight and WingLength to conduct an appropriate hypothesis test (use the cor.test() function).
+```{r}
+cor.test(Weight, WingLength)
+```
+
+### 10. What percent of the variation in weight is explained by the simple linear model with WingLength as a predictor?
+```{r}
+summary(lm(Weight ~ WingLength))$r.squared
+```
+
+### 11. Provide the ANOVA table that partitions the total variability in weight and interpret the F-test.
+```{r}
+anova(lm(Weight ~ WingLength))
+```
+
+### 12. Compare the MSE to your answer in #3
+```{r}
+# Come back to this later because what is MSE bro
+```
+
+### 13. Compare the square root of the F-statistic from the ANOVA table with the t-statistic from testing the correlation.
+```{r}
+sqrt(anova(lm(Weight ~ WingLength))$F[1])
+```
+They're the same value, `13.46304`.
+
+### 14. Find a 95% confidence interval for the mean weight for Savannah sparrows with a wing length of 20 mm.
+```{r}
+predict(lm(Weight ~ WingLength), data.frame(WingLength = 20), interval = "confidence")
+```
+
+### 15. Find a 95% prediction interval for the weight of a Savannah sparrow with a wing length of 20mm
+```{r}
+predict(lm(Weight ~ WingLength), data.frame(WingLength = 20), interval = "prediction")
+```
+
+### 16. Use the predict.plots function to show confidence and prediction models for the Sparrow data.
+```{r}
+predict.plots <- function(x, y, conf.level = .95) {
+  # x = explanatory variable
+  # y = response variable
+  model <- lm(y ~ x)
+  new <- seq(min(x), max(x), length = 101)
+  CI <- predict(model, list(x = new), int = "confidence", level = conf.level)
+  PI <- predict(model, list(x = new), int = "prediction", level = conf.level)
+  plot(x, y, ylim = range(y, PI[, 3]), main = "95% Confidence and Prediction Intervals", xlab = "WingLength", ylab = "Weight")
+  abline(model) # to obtain solid regression line
+  points(new, CI[, 2], type = "l", col = "red", lty = 2)
+  points(new, CI[, 3], type = "l", col = "red", lty = 2)
+  points(new, PI[, 2], type = "l", col = "blue", lty = 3)
+  points(new, PI[, 3], type = "l", col = "blue", lty = 3)
+}
+predict.plots(WingLength, Weight)
+```

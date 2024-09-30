@@ -21,3 +21,4 @@ Notes I take in my Data Science class in R and R Markdown
   - [[2.1] Inference for Regression Slope Notes](notes/InferenceForRegressionSlope)
   - [Regression Slope Homework](assignments/RegressionForInferenceSlopeHW)
   - [[2.3] Regression and Correlation Notes](notes/RegressionAndCorrelationNotes)
+  - [[2.4] Intervals for Predictions Assignment](assignments/IntervalsForPredictions)
