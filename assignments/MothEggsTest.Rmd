@@ -1,0 +1,77 @@
+---
+title: "Moth Eggs Test"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+    code_download: true
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+Moth Eggs Researchers were interested in looking for an association between body size (BodyMass after taking the log of the measurement in grams) and the number of eggs produced by a moth. BodyMass and the number of eggs present for 39 moths are in the file MothEggs. 
+
+```{r, echo = FALSE}
+eggs <- read.csv("../data/MothEggs.csv", header = TRUE)
+attach(eggs)
+```
+
+### 1. Before looking at the data, would you expect the association between body mass and number of eggs to be positive or negative? Explain.
+I would expect the association between body mass and number of eggs to be positive. This is because larger moths have more body mass and would be able to produce more eggs.
+
+### 2. What is the value of the correlation coefficient for measuring the strength of linear association between BodyMass and Eggs? 
+```{r}
+cor(BodyMass, Eggs)
+```
+
+#### 2.1 Is the association between these two variables statistically significant? Justify your answer.
+Since the r-value is 0.4413396, which is not close to 0, the association between BodyMass and Eggs is statistically significant. The distribution is a weak but positive linear relationship.
+
+### 3. Fit a linear regression model for predicting Eggs from BodyMass.  
+```{r}
+modelWithOutlier <- lm(Eggs ~ BodyMass)
+plot(Eggs ~ BodyMass, xlab = "Body Mass (log grams)", ylab = "Number of Eggs", main = "Number of Eggs vs. Body Mass")
+abline(modelWithOutlier, col = "red")
+summary(modelWithOutlier)
+```
+
+#### 3.1 What is the equation of the least squares regression line?
+`Eggs = 79.86(BodyMass) + 24.38`
+
+### 4. The conditions for inference are not met, primarily because there is one very unusual observation.
+
+#### 4.1 Identify this observation
+```{r}
+outlier <- which.max(modelWithOutlier$residuals)
+eggs[outlier, ]
+```
+
+#### 4.2 Remove the moth that had no eggs from the dataset and fit a linear regression model for predicting the number of eggs.
+```{r}
+eggs <- eggs[-outlier, ]
+modelWithoutOutlier <- lm(Eggs ~ BodyMass, data = eggs)
+plot(Eggs ~ BodyMass, xlab = "Body Mass (log grams)", ylab = "Number of Eggs", main = "Number of Eggs vs. Body Mass")
+abline(modelWithoutOutlier, col = "red")
+summary(modelWithoutOutlier)
+```
+
+#### 4.3 What is the equation of the least squares regression line?
+`Eggs = 75.58(BodyMass) + 29.75`
+
+### 5. Prepare appropriate residual plots and comment on whether the conditions for inference are met.
+```{r}
+plot(modelWithoutOutlier$fitted.values, modelWithoutOutlier$residuals, main = "Residuals vs Fitted", xlab = "Fitted Values", ylab = "Residuals")
+abline(h = 0, col = "red", lwd = 2)
+```
+
+### 6. Compare the estimated slope with and without the moth that had no eggs.
+The estimated slope with the moth that had no eggs was 79.86, and the estimated slope without the moth that had no eggs was 75.58. The estimated slope without the moth that had no eggs is lower than the estimated slope with the moth that had no eggs.
+
+### 7. Compare the percent of variability in the number of eggs that is explained with and without the moth that had no eggs.
+```{r}
+summary(modelWithOutlier)$r.squared
+summary(modelWithoutOutlier)$r.squared
+```
+
+The variability in the model with the outlier is higher than the variability of the model without the outlier because the outlier affects the model's variability.
