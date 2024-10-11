@@ -1,0 +1,47 @@
+---
+title: "Multiple Linear Regression Notes"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+    code_download: true
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+```{r, echo = FALSE}
+jurors <- read.csv("../data/Jurors.csv", header = TRUE)
+attach(jurors)
+```
+
+### Plot the PctReport of Jurors in 1998 and 2000
+```{r}
+plot(Period, PctReport, pch = (Year - 1998) / 2 * 15 + 1, col = Year, xlab = "Period", ylab = "Percent Reporting", main = "Juror Reporting by Period and Year")
+legend("topright", legend = c("1998", "2000"), pch = c(1, 16))
+
+juror2000.lm <- lm(PctReport ~ Period, data = subset(jurors, Year == 2000))
+juror1998.lm <- lm(PctReport ~ Period, data = subset(jurors, Year == 1998))
+juror1998.lm$coefficients
+juror2000.lm$coefficients
+abline(juror1998.lm, col = "red")
+abline(juror2000.lm, col = "blue")
+```
+
+### Juror in 2001 column
+
+```{r}
+jurorI2001 <- ifelse(Year == 1998, 0, 1)
+jurorI2001.lm <- lm(PctReport ~ Period + jurorI2001, data = jurors)
+summary(jurorI2001.lm)
+plot(Period, PctReport, pch = jurorI2001 + 1, col = jurorI2001 + 1, xlab = "Period", ylab = "Percent Reporting", main = "Juror Reporting by Period and Year")
+abline(jurorI2001.lm, col = "blue")
+abline(juror1998.lm, col = "red")
+abline(juror2000.lm, col = "green")
+legend("topright", legend = c("1998", "2000", "2001"), pch = c(1, 16, 2))
+```
+
+### ANOVA for linear model
+```{r}
+anova(jurorI2001.lm)
+```

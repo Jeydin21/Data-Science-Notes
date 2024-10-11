@@ -22,5 +22,7 @@ Notes I take in my Data Science class in R and R Markdown
   - [Regression Slope Homework](assignments/RegressionForInferenceSlopeHW)
   - [[2.3] Regression and Correlation Notes](notes/RegressionAndCorrelationNotes)
   - [[2.4] Intervals for Predictions Assignment](assignments/IntervalsForPredictions)
-  - [Butterflies Case Study](assignments/ButterflyWings)
+  - [[2.5] Butterflies Case Study](assignments/ButterflyWings)
   - [Moth Eggs Test](assignments/MothEggsTest)
+- ### Multiple Regression
+  - [[3.1] Multiple Regression Model Notes](notes/MultipleRegressionModelNotes)

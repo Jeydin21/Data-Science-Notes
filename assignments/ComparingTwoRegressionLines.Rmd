@@ -1,0 +1,25 @@
+---
+title: "Comparing Two Regression Lines"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+    code_download: true
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+```{r, echo = FALSE}
+butterflies <- read.csv("../data/ButterfliesBc.csv", header = TRUE)
+attach(butterflies)
+```
+
+### Plot the Butterflies data
+```{r}
+plot(Temp, Wing, xlab = "Temperature", ylab = "Wing Length", main = "Wing Length by Temperature and Species", pch = ifelse(Sex == "Male", 16, 16), col = ifelse(Sex == "Male", "blue", "red"))
+legend("topright", legend = c("Male", "Female"), pch = 16, col = c("blue", "red"))
+
+abline(lm(Wing ~ Temp, data = subset(butterflies, Sex == "Male")), col = "blue")
+abline(lm(Wing ~ Temp, data = subset(butterflies, Sex == "Female")), col = "red")
+```
