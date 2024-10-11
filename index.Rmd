@@ -26,3 +26,4 @@ Notes I take in my Data Science class in R and R Markdown
   - [Moth Eggs Test](assignments/MothEggsTest)
 - ### Multiple Regression
   - [[3.1] Multiple Regression Model Notes](notes/MultipleRegressionModelNotes)
+  - [Blue Jays Assignment](assignments/BlueJays)
