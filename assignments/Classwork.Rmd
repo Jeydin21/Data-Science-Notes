@@ -1,0 +1,123 @@
+---
+title: "Classwork Assignment 10/17/2024"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+    code_download: true
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+```{r, echo = FALSE}
+brain <- read.csv("../data/BrainpH.csv", header = TRUE)
+math <- read.csv("../data/MathEnrollment.csv", header = TRUE)
+fluorescence <- read.csv("../data/Fluorescence.csv", header = TRUE)
+```
+
+## MathEnrollment Data Questions
+### a. What percent of the variability in spring enrollment is explained by the multipe linear regression model based off fall enrollment and academic year?
+```{r}
+summary(lm(Spring ~ Fall + AYear, data = math))
+```
+
+`27.73%` of the variability in spring enrollment is explained by the multiple linear regression of fall enrollment and academic year.
+
+### b. What is the size of the typical error for this multiple regression model?
+```{r}
+summary(lm(Spring ~ Fall + AYear, data = math))$sigma
+```
+The typical error for this multiple regression model is `31.08974`.
+
+### c. Provide the ANOVA table for partitioning the total variability in spring enrollment based on this model and interpret the associated F-test.
+```{r}
+anova(lm(Spring ~ Fall + AYear, data = math))
+```
+
+The F-value for the "Fall" variable is `0.8763`, and the corresponding p-value is `0.3766`. Since the p-value is greater than the common significance level (e.g., 0.05), we fail to reject the null hypothesis. This indicates that the "Fall" variable does not have a statistically significant effect on spring enrollment.
+
+ The F-value for the "AYear" variable is `2.1934`, with a p-value of `0.1769`. Again, since the p-value is greater than S.05, we fail to reject the null hypothesis, suggesting that "AYear" does not have a statistically significant effect on spring enrollment.
+
+Based on the F-test results, neither "Fall" nor "AYear" significantly affects spring enrollment in this dataset, as indicated by the high p-values for both variables.
+
+### d. Are the regression coefficients for both explanatory variables significantly different from zero? Provide appropriate hypotheses, test statistics, and P-values in order to make your conclusion.
+```{r}
+summary(lm(Spring ~ Fall + AYear, data = math))
+```
+
+Ho: The regression coefficient for "Fall" is zero.
+Ha: The regression coefficient for "Fall" is not zero.
+
+Fall: The estimated coefficient is -0.2021, with a standard error of 0.3589. The t-value is -0.563, and the p-value is 0.589.
+AYear: The estimated coefficient is 4.5159, with a standard error of 3.0492. The t-value is 1.481, and the p-value is 0.177.
+
+The decision rule is to reject the null hypothesis if the p-value is less than the significance level (commonly 0.05).
+
+- For Fall, the p-value is 0.589, which is much greater than 0.05. Therefore, we fail to reject the null hypothesis. This suggests that the coefficient for "Fall" is not significantly different from zero.
+
+- For AYear, the p-value is 0.177, which is also greater than 0.05. So, we also fail to reject the null hypothesis for "AYear," indicating that its coefficient is not significantly different from zero.
+
+Based on the results, neither the "Fall" nor the "AYear" coefficients are significantly different from zero at the 0.05 significance level. This implies that neither variable has a statistically significant effect on the spring enrollment in this model.
+
+## BrainpH Data Questions
+### a. Make a scatterplot of `Y = pH` versus `X = Age and with Sex as a grouping variable (i.e., use different colors or different plotting symbols for the two levels of Sex). Comment on the plot.
+```{r}
+plot(brain$Age, brain$pH, col = ifelse(brain$Sex == "M", "blue", "red"), pch = 19, xlab = "Age", ylab = "pH")
+legend("topright", legend = c("Male", "Female"), pch = 16, col = c("blue", "red"))
+```
+
+The scatterplot shows that the male pH levels are more spread out than the female pH levels.
+
+### b. Fit the regression of pH on Age and test whether there is a linear association between the two variables.
+```{r}
+summary(lm(pH ~ Age, data = brain))
+```
+
+### c. Fit a model that produces parallel regression lines for the two levels of Sex. Write down the fitted prediction equation for each level of Sex.
+```{r}
+model_parallel <- lm(pH ~ Age + Sex, data = brain)
+summary(model_parallel)
+```
+
+The prediction equation for Male is `pH = 6.9025758 - 0.0004535 * Age`
+
+The prediction equation for Female is `pH = 6.9025758 - 0.0134258 * Age`
+
+## Fluorescence Data Questions
+### a. Fit a quadratic regression model for predicting ProteinProp from Calcium (if needed for the software you are using, create a new variable CalciumSq = Calcium x Calcium). Write down the fitted regression equation.
+```{r}
+fluorescence$CalciumSq <- fluorescence$Calcium^2
+summary(lm(ProteinProp ~ Calcium + CalciumSq, data = fluorescence))
+```
+
+The fitted regression equation for Calcium is `ProteinProp = 0.479926 - 0.253189 * Calcium`
+
+The fitted regression equation for CalciumSq is `ProteinProp = 0.479926 - 0.027788 * CalciumSq`
+
+### b. Add the quadratic curve to a scatterplot of ProteinProp versus Calcium.
+```{r}
+model <- lm(ProteinProp ~ Calcium + CalciumSq, data = fluorescence)
+plot(fluorescence$Calcium, fluorescence$ProteinProp, xlab = "Calcium", ylab = "ProteinProp", main = "Scatterplot with Quadratic Fit")
+curve(coef(model)[1] + coef(model)[2] * x + coef(model)[3] * x^2, add = TRUE, col = "blue")
+```
+
+
+### c. Are the conditions for inference reasonably satisfied for this model?
+```{r}
+model <- lm(ProteinProp ~ Calcium + CalciumSq, data = fluorescence)
+plot(fluorescence$Calcium, resid(model), xlab = "Calcium", ylab = "Residuals", main = "Residual Plot")
+abline(h = 0, col = "red")
+```
+
+Not really, there's a clear pattern where the residuals start increasing and decreasing.
+
+### d. Is the parameter for the quadratic term significantly different from zero? Justify your answer.
+```{r}
+summary(lm(ProteinProp ~ Calcium + CalciumSq, data = fluorescence))
+```
+
+### e. Identify the coefficient of multiple determination and interpret this value.
+```{r}
+summary(lm(ProteinProp ~ Calcium + CalciumSq, data = fluorescence))$r.squared
+```

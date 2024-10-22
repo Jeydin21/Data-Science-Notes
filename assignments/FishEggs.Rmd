@@ -1,0 +1,74 @@
+---
+title: "FishEggs Test"
+output:
+  html_document:
+    toc: true
+    theme: darkly
+    highlight: pygments
+    code_download: true
+lang: en-US
+date: "Last Updated: `r format(Sys.Date(), '%B %d, %Y')` `r format(Sys.time(), '%H:%M:%S')`"
+---
+
+```{r setup, include=FALSE}
+fishEggs <- read.csv("../data/FishEggs.csv", header = TRUE)
+attach(fishEggs)
+```
+
+### Write down an equation for the least squares line and comment on what it appears to indicate about the relationship between PctDM and Age.
+```{r}
+model <- lm(PctDM ~ Age, data = fishEggs)
+summary(model)
+```
+`PctDM = 38.70206 - 0.21033 * Age`
+The equation indicates that the percentage of dry matter in fish eggs decreases by 0.21033 for each additional year of age, and that it starts at 38.70206 when the age is 0.
+
+### What percentage of the variability in PctDM does Age explain for these fish?
+```{r}
+summary(model)$r.squared
+```
+20.04% of the variation in in PctDM is accounted for by the least squared regression line of Age.
+
+### Is there evidence that the relationship in (#1) is statistically significant? Explain how you know that it is or is not.
+```{r}
+summary(model)$coefficients
+```
+Since the p-value for the Age coefficient is less than 0.05, we can reject the null hypothesis that the coefficient is equal to 0. Therefore, there is evidence that the relationship between PctDM and Age is statistically significant.
+
+### Produce a plot of the residuals versus the fits for the simple linear model. Does there appear to be any regular pattern?
+```{r}
+plot(model$fitted.values, model$residuals, xlab = "Fitted Values", ylab = "Residuals", main = "Residuals vs. Fitted Values")
+```
+The points on the graph appear to be spread out and do not follow a linear pattern.
+
+### Modify your plot in (#4) to show the points for each Month (Sept/Nov) with different symbols or colors. What (if anything) do you observe about how the residuals might be related to the month?
+```{r}
+plot(model$fitted.values, model$residuals, xlab = "Fitted Values", ylab = "Residuals", main = "Residuals vs. Fitted Values", pch = ifelse(Month == "Sep", 1, 2))
+legend("topright", legend = c("Nov", "Sep"), pch = c(1, 2))
+```
+The residuals for September appear to be linear with values of 1 because they're mostly in a straight line. The residuals for November are more spread out and do not follow a linear pattern.
+
+### Now fit a multiple regression model, using an indicator (Sept) for the month and interaction product, to compare the regression lines for September and November.
+```{r}
+model2 <- lm(PctDM ~ Age + Sept + Age:Sept, data = fishEggs)
+summary(model2)
+```
+November has a bigger slope than September because the points for November are angled upward but the points for September are nearly horizontal.
+
+### Do you need both terms for a difference in intercepts and slopes? If not, delete any terms that aren't needed and run the new model.
+```{r}
+model3 <- lm(PctDM ~ Age + Sept, data = fishEggs)
+summary(model3)
+```
+
+### What percentage of the variability in PctDM does the model in (#6) explain for these fish?
+```{r}
+summary(model3)$r.squared
+```
+42.30% of the variation in in PctDM is accounted for by the lmodel in #6
+
+### Redo the plot in (#5) showing the residuals versus fits for the model in (#6) with different symbols for the months. Does this plot show an improvement over your plot in (#5)? Explain why.
+```{r}
+plot(model3$fitted.values, model3$residuals, xlab = "Fitted Values", ylab = "Residuals", main = "Residuals vs. Fitted Values", pch = ifelse(Month == "Sep", 1, 2))
+```
+Yes because now all the points are close together and the slopes are different.
